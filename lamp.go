@@ -32,11 +32,14 @@ func lampSend(address string, value bool) {
 }
 
 func lampNotification(address string, attribute string, data []byte) {
-	var unpackedData dpt.DPT_1001
+	var (
+		unpackedData dpt.DPT_1001
+		attributes   = make(map[string]interface{})
+	)
 	err := unpackedData.Unpack(data)
 	if err != nil {
 		return
 	}
-	value := strings.ToLower(unpackedData.String())
-	sendXAAL(address, attribute, value)
+	attributes[attribute] = strings.ToLower(unpackedData.String())
+	sendXAAL(address, attributes)
 }

@@ -22,6 +22,8 @@ func linkMethods(dev *device.Device, typeXAAL string) error {
 		dev.AddMethod("down", shutterDown)
 		dev.AddMethod("stop", shutterStop)
 		break
+	case "watermeter.basic":
+		break
 	default:
 		return fmt.Errorf("%s type methods hasn't been implemented yet", typeXAAL)
 	}
@@ -37,15 +39,20 @@ func processKNXEvent(addrXAAL string, typeXAAL string, attribute string, data []
 	case "shutter.basic":
 		shutterNotification(addrXAAL, attribute, data)
 		break
+	case "watermeter.basic":
+		watermeterNotification(addrXAAL, attribute, data)
+		break
 	default:
 		return fmt.Errorf("%s type notifications hasn't been implemented yet", typeXAAL)
 	}
 	return nil
 }
 
-func sendXAAL(address string, attribute string, value string) {
+func sendXAAL(address string, attributes map[string]interface{}) {
 	device := _devs[address]
-	device.SetAttributeValue(attribute, value)
+	for attribute, value := range attributes {
+		device.SetAttributeValue(attribute, value)
+	}
 	engine.NotifyAttributesChange(device)
 }
 

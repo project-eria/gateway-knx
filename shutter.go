@@ -36,11 +36,14 @@ func shutterSend(address string, value bool) {
 }
 
 func shutterNotification(address string, attribute string, data []byte) {
-	var unpackedData dpt.DPT_1009
+	var (
+		unpackedData dpt.DPT_1009
+		attributes   = make(map[string]interface{})
+	)
 	err := unpackedData.Unpack(data)
 	if err != nil {
 		return
 	}
-	value := strings.ToLower(unpackedData.String())
-	sendXAAL(address, attribute, value)
+	attributes[attribute] = strings.ToLower(unpackedData.String())
+	sendXAAL(address, attributes)
 }
