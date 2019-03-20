@@ -9,6 +9,8 @@ import (
 	"github.com/vapourismo/knx-go/knx/dpt"
 )
 
+/* For lamp we use 1.001 as default KNX DTP */
+
 func lampOn(dev *device.Device, args map[string]interface{}) map[string]interface{} {
 	lampSend(dev.Address, true)
 	return nil
@@ -29,14 +31,12 @@ func lampSend(address string, value bool) {
 	}
 }
 
-func lampNotification(address string, attribute string, dptType string, data []byte) {
-	if dptType == "DPT_1001" {
-		var unpackedData dpt.DPT_1001
-		err := unpackedData.Unpack(data)
-		if err != nil {
-			return
-		}
-		value := strings.ToLower(unpackedData.String())
-		sendXAAL(address, attribute, value)
+func lampNotification(address string, attribute string, data []byte) {
+	var unpackedData dpt.DPT_1001
+	err := unpackedData.Unpack(data)
+	if err != nil {
+		return
 	}
+	value := strings.ToLower(unpackedData.String())
+	sendXAAL(address, attribute, value)
 }

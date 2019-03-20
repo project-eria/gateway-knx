@@ -9,6 +9,7 @@ import (
 	"github.com/vapourismo/knx-go/knx/dpt"
 )
 
+/* For shutter we use 1.009 as default KNX DTP */
 func shutterUp(dev *device.Device, args map[string]interface{}) map[string]interface{} {
 	shutterSend(dev.Address, false)
 	return nil
@@ -34,14 +35,12 @@ func shutterSend(address string, value bool) {
 	}
 }
 
-func shutterNotification(address string, attribute string, dptType string, data []byte) {
-	if dptType == "DPT_1009" {
-		var unpackedData dpt.DPT_1009
-		err := unpackedData.Unpack(data)
-		if err != nil {
-			return
-		}
-		value := strings.ToLower(unpackedData.String())
-		sendXAAL(address, attribute, value)
+func shutterNotification(address string, attribute string, data []byte) {
+	var unpackedData dpt.DPT_1009
+	err := unpackedData.Unpack(data)
+	if err != nil {
+		return
 	}
+	value := strings.ToLower(unpackedData.String())
+	sendXAAL(address, attribute, value)
 }

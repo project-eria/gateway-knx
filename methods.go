@@ -28,14 +28,14 @@ func linkMethods(dev *device.Device, typeXAAL string) error {
 	return nil
 }
 
-func processKNXEvent(addrXAAL string, typeXAAL string, attribute string, typeKNX string, data []byte) error {
+func processKNXEvent(addrXAAL string, typeXAAL string, attribute string, data []byte) error {
 
 	switch typeXAAL {
 	case "lamp.basic":
-		lampNotification(addrXAAL, attribute, typeKNX, data)
+		lampNotification(addrXAAL, attribute, data)
 		break
 	case "shutter.basic":
-		shutterNotification(addrXAAL, attribute, typeKNX, data)
+		shutterNotification(addrXAAL, attribute, data)
 		break
 	default:
 		return fmt.Errorf("%s type notifications hasn't been implemented yet", typeXAAL)

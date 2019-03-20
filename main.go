@@ -21,7 +21,7 @@ import (
 )
 
 func version() string {
-	return fmt.Sprintf("0.0.1 - %s (engine commit %s)", engine.Timestamp, engine.GitCommit)
+	return fmt.Sprintf("0.0.2 - %s (engine commit %s)", engine.Timestamp, engine.GitCommit)
 }
 
 const configFile = "gateway-knx.json"
@@ -50,7 +50,6 @@ type configDevice struct {
 
 type configGroup struct {
 	GrpAddr   string
-	DPT       string
 	Attribute string
 	group     cemi.GroupAddr
 	device    *configDevice
@@ -200,9 +199,8 @@ func updateFromKNX() {
 		if confGroup, in := _configByKNX[addrKNX]; in {
 			addrXAAL := confGroup.device.XaalAddr
 			attribute := confGroup.Attribute
-			typeKNX := confGroup.DPT
 			typeXAAL := confGroup.device.Type
-			if err := processKNXEvent(addrXAAL, typeXAAL, attribute, typeKNX, msg.Data); err != nil {
+			if err := processKNXEvent(addrXAAL, typeXAAL, attribute, msg.Data); err != nil {
 				logger.Module("main").WithError(err).Error()
 			}
 		} else {
