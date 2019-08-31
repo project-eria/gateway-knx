@@ -3,9 +3,9 @@ package main
 import (
 	"strings"
 
+	logger "github.com/project-eria/eria-logger"
 	"github.com/project-eria/xaal-go/device"
 
-	"github.com/project-eria/logger"
 	"github.com/vapourismo/knx-go/knx/dpt"
 )
 

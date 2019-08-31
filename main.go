@@ -14,7 +14,7 @@ import (
 	"github.com/project-eria/eria-base"
 	configmanager "github.com/project-eria/eria-base/config-manager"
 
-	"github.com/project-eria/logger"
+	logger "github.com/project-eria/eria-logger"
 	"github.com/vapourismo/knx-go/knx/cemi"
 
 	"github.com/vapourismo/knx-go/knx"
