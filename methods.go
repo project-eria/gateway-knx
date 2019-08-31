@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
+	"github.com/project-eria/xaal-go"
 	"github.com/project-eria/xaal-go/device"
-	"github.com/project-eria/xaal-go/engine"
 
 	"github.com/vapourismo/knx-go/knx/cemi"
 
@@ -31,7 +31,6 @@ func linkMethods(dev *device.Device, typeXAAL string) error {
 }
 
 func processKNXEvent(addrXAAL string, typeXAAL string, attribute string, data []byte) error {
-
 	switch typeXAAL {
 	case "lamp.basic":
 		lampNotification(addrXAAL, attribute, data)
@@ -53,7 +52,7 @@ func sendXAAL(address string, attributes map[string]interface{}) {
 	for attribute, value := range attributes {
 		device.SetAttributeValue(attribute, value)
 	}
-	engine.NotifyAttributesChange(device)
+	xaal.NotifyAttributesChange(device)
 }
 
 func sendKNX(group cemi.GroupAddr, data []byte) error {

@@ -1,28 +1,29 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
-	"os/signal"
-	"runtime"
+	"time"
 
+	"github.com/project-eria/xaal-go"
 	"github.com/project-eria/xaal-go/device"
-	"github.com/project-eria/xaal-go/engine"
 	"github.com/project-eria/xaal-go/message"
 	"github.com/project-eria/xaal-go/schemas"
 	"github.com/project-eria/xaal-go/utils"
 
-	"github.com/project-eria/config-manager"
+	"github.com/project-eria/eria-base"
+	configmanager "github.com/project-eria/eria-base/config-manager"
+
 	"github.com/project-eria/logger"
 	"github.com/vapourismo/knx-go/knx/cemi"
 
 	"github.com/vapourismo/knx-go/knx"
 )
 
-func version() string {
-	return fmt.Sprintf("0.0.2 - %s (engine commit %s)", engine.Timestamp, engine.GitCommit)
-}
+var (
+	// Version is a placeholder that will receive the git tag version during build time
+	Version = "-"
+)
 
 const configFile = "gateway-knx.json"
 
@@ -30,7 +31,7 @@ func setupDev(dev *device.Device) {
 	dev.VendorID = "ERIA"
 	dev.ProductID = "KNXIPGateway"
 	dev.Info = "gateway.knx"
-	dev.Version = version()
+	dev.Version = Version
 }
 
 var config = struct {
@@ -65,18 +66,10 @@ var client knx.GroupTunnel
 
 func main() {
 	defer os.Exit(0)
-	_showVersion := flag.Bool("v", false, "Display the version")
-	if !flag.Parsed() {
-		flag.Parse()
-	}
 
-	// Show version (-v)
-	if *_showVersion {
-		fmt.Println(version())
-		os.Exit(0)
-	}
+	eria.AddShowVersion(Version)
 
-	logger.Module("main").Infof("Starting Gateway KNX %s...", version())
+	logger.Module("main").Infof("Starting Gateway KNX %s...", Version)
 
 	// Loading config
 	cm, err := configmanager.Init(configFile, &config)
@@ -97,18 +90,25 @@ func main() {
 	}
 	defer cm.Close()
 
-	engine.Init()
+	// Init xAAL engine
+	eria.InitEngine()
 
 	setup()
 
 	// Save for new Address during setup
 	cm.Save()
 
-	engine.AddRxHandler(updateFromXAAL)
+	xaal.AddRxHandler(updateFromXAAL)
 
 	// Connect to the KNX gateway.
 	GWAddr := fmt.Sprintf("%s:%d", config.GatewayIP, config.GatewayPort)
-	client, err = knx.NewGroupTunnel(GWAddr, knx.DefaultTunnelConfig)
+	knxConfig := knx.TunnelConfig{
+		ResendInterval:    60 * time.Second, // Wait for one minute
+		HeartbeatInterval: 10 * time.Second,
+		ResponseTimeout:   9999 * time.Hour, // Don't stop
+	}
+
+	client, err = knx.NewGroupTunnel(GWAddr, knxConfig)
 	if err != nil {
 		logger.Module("main").WithError(err).Fatal("Can connect KNX IP Gateway")
 	}
@@ -117,21 +117,13 @@ func main() {
 	defer client.Close()
 
 	// Launch the xAAL engine
-	go engine.Run()
-	defer engine.Stop()
+	go xaal.Run()
+	defer xaal.Stop()
 
 	// Receive messages from the gateway
 	go updateFromKNX()
 
-	// Set up channel on which to send signal notifications.
-	// We must use a buffered channel or risk missing the signal
-	// if we're not ready to receive when the signal is sent.
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-
-	// Block until keyboard interrupt is received.
-	<-c
-	runtime.Goexit()
+	eria.WaitForExit()
 }
 
 // setup : create devices, register ...
@@ -163,7 +155,7 @@ func setup() {
 			}
 
 			setupDev(dev)
-			engine.AddDevice(dev)
+			xaal.AddDevice(dev)
 		}
 		for i := range confDev.Groups {
 			confGroup := &confDev.Groups[i]
@@ -183,7 +175,7 @@ func setup() {
 	}
 	gw.SetAttributeValue("embedded", addresses)
 	setupDev(gw)
-	engine.AddDevice(gw)
+	xaal.AddDevice(gw)
 }
 
 func updateFromXAAL(msg *message.Message) {
@@ -195,7 +187,7 @@ func updateFromKNX() {
 	for msg := range client.Inbound() {
 		//fmt.Printf("%+v\n", msg)
 		addrKNX := msg.Destination.String()
-
+		logger.Module("main").WithField("addrKNX", addrKNX).Debug("Received KNX message from")
 		if confGroup, in := _configByKNX[addrKNX]; in {
 			addrXAAL := confGroup.device.XaalAddr
 			attribute := confGroup.Attribute
