@@ -25,12 +25,29 @@ func shutterStop(dev *device.Device, args map[string]interface{}) map[string]int
 	return nil
 }
 
+func shutterPosition(dev *device.Device, args map[string]interface{}) map[string]interface{} {
+	value, ok := args["target"]
+	if ok {
+		valueInt := float32(value.(float64))
+		if confGroup, in := _configByXAAL[dev.Address]["positionTarget"]; in {
+			data := dpt.DPT_5001(valueInt).Pack()
+			logger.Module("main:lamp").WithFields(logger.Fields{"address": dev.Address, "target": valueInt}).Debug("Moving Shutter")
+			if err := sendKNX(confGroup.group, data); err != nil {
+				logger.Module("main:shutter").Error(err)
+			}
+		}
+	} else {
+		logger.Module("main:shutter").Error("Missing 'positionTarget' parameter")
+	}
+	return nil
+}
+
 func shutterSend(address string, value bool) {
 	if confGroup, in := _configByXAAL[address]["action"]; in {
 		data := dpt.DPT_1009(value).Pack()
 
 		if err := sendKNX(confGroup.group, data); err != nil {
-			logger.Module("main").Error(err)
+			logger.Module("main:shutter").Error(err)
 		}
 	}
 }

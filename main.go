@@ -12,7 +12,6 @@ import (
 	"github.com/project-eria/xaal-go/utils"
 
 	"github.com/project-eria/eria-base"
-	configmanager "github.com/project-eria/eria-base/config-manager"
 
 	logger "github.com/project-eria/eria-logger"
 	"github.com/vapourismo/knx-go/knx/cemi"
@@ -72,22 +71,8 @@ func main() {
 	logger.Module("main").Infof("Starting Gateway KNX %s...", Version)
 
 	// Loading config
-	cm, err := configmanager.Init(configFile, &config)
-	if err != nil {
-		if configmanager.IsFileMissing(err) {
-			err = cm.Save()
-			if err != nil {
-				logger.Module("main").WithField("filename", configFile).Fatal(err)
-			}
-			logger.Module("main").Fatal("JSON Config file do not exists, created...")
-		} else {
-			logger.Module("main").WithField("filename", configFile).Fatal(err)
-		}
-	}
+	cm := eria.LoadConfig(configFile, &config)
 
-	if err := cm.Load(); err != nil {
-		logger.Module("main").Fatal(err)
-	}
 	defer cm.Close()
 
 	// Init xAAL engine
@@ -108,6 +93,7 @@ func main() {
 		ResponseTimeout:   9999 * time.Hour, // Don't stop
 	}
 
+	var err error
 	client, err = knx.NewGroupTunnel(GWAddr, knxConfig)
 	if err != nil {
 		logger.Module("main").WithError(err).Fatal("Can connect KNX IP Gateway")
@@ -133,10 +119,11 @@ func setup() {
 	_configByKNX = map[string]*configGroup{}
 
 	// gw
-	gw := schemas.Gateway(config.GWXaalAddr)
+	gw, _ := schemas.Gateway(config.GWXaalAddr)
 
 	var addresses []string
 	for i := range config.Devices {
+
 		confDev := &config.Devices[i]
 		if confDev.XaalAddr == "" {
 			confDev.XaalAddr = utils.GetRandomUUID()
@@ -144,6 +131,7 @@ func setup() {
 		}
 
 		dev, err := schemas.DeviceFromType(confDev.Type, confDev.XaalAddr)
+
 		if err != nil {
 			logger.Module("main").WithError(err).Warn()
 		} else {
@@ -155,8 +143,10 @@ func setup() {
 			}
 
 			setupDev(dev)
+
 			xaal.AddDevice(dev)
 		}
+
 		for i := range confDev.Groups {
 			confGroup := &confDev.Groups[i]
 			confGroup.device = confDev

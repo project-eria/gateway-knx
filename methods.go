@@ -14,13 +14,24 @@ import (
 func linkMethods(dev *device.Device, typeXAAL string) error {
 	switch typeXAAL {
 	case "lamp.basic":
-		dev.AddMethod("on", lampOn)
-		dev.AddMethod("off", lampOff)
+		dev.HandleMethod("on", lampOn)
+		dev.HandleMethod("off", lampOff)
+		break
+	case "lamp.dimmer":
+		dev.HandleMethod("on", lampOn)
+		dev.HandleMethod("off", lampOff)
+		dev.HandleMethod("dim", lampDim)
 		break
 	case "shutter.basic":
-		dev.AddMethod("up", shutterUp)
-		dev.AddMethod("down", shutterDown)
-		dev.AddMethod("stop", shutterStop)
+		dev.HandleMethod("up", shutterUp)
+		dev.HandleMethod("down", shutterDown)
+		dev.HandleMethod("stop", shutterStop)
+		break
+	case "shutter.position":
+		dev.HandleMethod("up", shutterUp)
+		dev.HandleMethod("down", shutterDown)
+		dev.HandleMethod("stop", shutterStop)
+		dev.HandleMethod("position", shutterPosition)
 		break
 	case "watermeter.basic":
 		break
@@ -33,9 +44,11 @@ func linkMethods(dev *device.Device, typeXAAL string) error {
 func processKNXEvent(addrXAAL string, typeXAAL string, attribute string, data []byte) error {
 	switch typeXAAL {
 	case "lamp.basic":
+	case "lamp.dimmer":
 		lampNotification(addrXAAL, attribute, data)
 		break
 	case "shutter.basic":
+	case "shutter.position":
 		shutterNotification(addrXAAL, attribute, data)
 		break
 	case "watermeter.basic":

@@ -12,21 +12,38 @@ import (
 /* For lamp we use 1.001 as default KNX DTP */
 
 func lampOn(dev *device.Device, args map[string]interface{}) map[string]interface{} {
-	lampSend(dev.Address, true)
+	lampOnOffSend(dev.Address, true)
 	return nil
 }
 
 func lampOff(dev *device.Device, args map[string]interface{}) map[string]interface{} {
-	lampSend(dev.Address, false)
+	lampOnOffSend(dev.Address, false)
 	return nil
 }
 
-func lampSend(address string, value bool) {
+func lampDim(dev *device.Device, args map[string]interface{}) map[string]interface{} {
+	value, ok := args["target"]
+	if ok {
+		valueInt := float32(value.(float64))
+		if confGroup, in := _configByXAAL[dev.Address]["dimTarget"]; in {
+			data := dpt.DPT_5001(valueInt).Pack()
+			logger.Module("main:lamp").WithFields(logger.Fields{"address": dev.Address, "target": valueInt}).Debug("Dimming Lamp")
+			if err := sendKNX(confGroup.group, data); err != nil {
+				logger.Module("main:lamp").Error(err)
+			}
+		}
+	} else {
+		logger.Module("main:lamp").Error("Missing 'dimTarget' parameter")
+	}
+	return nil
+}
+
+func lampOnOffSend(address string, value bool) {
 	if confGroup, in := _configByXAAL[address]["light"]; in {
 		data := dpt.DPT_1001(value).Pack()
 
 		if err := sendKNX(confGroup.group, data); err != nil {
-			logger.Module("main").Error(err)
+			logger.Module("main:lamp").Error(err)
 		}
 	}
 }
