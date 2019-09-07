@@ -42,22 +42,23 @@ func linkMethods(dev *device.Device, typeXAAL string) error {
 }
 
 func processKNXEvent(addrXAAL string, typeXAAL string, attribute string, data []byte) error {
+	var err error
 	switch typeXAAL {
 	case "lamp.basic":
 	case "lamp.dimmer":
-		lampNotification(addrXAAL, attribute, data)
+		err = lampNotification(addrXAAL, attribute, data)
 		break
 	case "shutter.basic":
 	case "shutter.position":
-		shutterNotification(addrXAAL, attribute, data)
+		err = shutterNotification(addrXAAL, attribute, data)
 		break
 	case "watermeter.basic":
-		watermeterNotification(addrXAAL, attribute, data)
+		err = watermeterNotification(addrXAAL, attribute, data)
 		break
 	default:
 		return fmt.Errorf("%s type notifications hasn't been implemented yet", typeXAAL)
 	}
-	return nil
+	return err
 }
 
 func sendXAAL(address string, attributes map[string]interface{}) {

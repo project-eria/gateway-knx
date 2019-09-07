@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"math"
 	"strings"
 
 	"github.com/project-eria/xaal-go/device"
@@ -48,15 +50,27 @@ func lampOnOffSend(address string, value bool) {
 	}
 }
 
-func lampNotification(address string, attribute string, data []byte) {
-	var (
-		unpackedData dpt.DPT_1001
-		attributes   = make(map[string]interface{})
-	)
-	err := unpackedData.Unpack(data)
-	if err != nil {
-		return
+func lampNotification(address string, attribute string, data []byte) error {
+	var attributes = make(map[string]interface{})
+	switch attribute {
+	case "light":
+		var unpackedData dpt.DPT_1001
+		err := unpackedData.Unpack(data)
+		if err != nil {
+			return fmt.Errorf("Unpacking '%s' data has failed (%s)", attribute, err)
+		}
+		attributes["light"] = strings.ToLower(unpackedData.String())
+	case "dimmer":
+		var unpackedData dpt.DPT_5001
+		err := unpackedData.Unpack(data)
+		if err != nil {
+			return fmt.Errorf("Unpacking '%s' data has failed (%s)", attribute, err)
+		}
+		dataInt := int(math.Round(float64(unpackedData))) //Fix for https://github.com/vapourismo/knx-go/issues/23
+		attributes["dimmer"] = dataInt
+	default:
+		return fmt.Errorf("Notification for '%s' attribute is not implemented", attribute)
 	}
-	attributes[attribute] = strings.ToLower(unpackedData.String())
 	sendXAAL(address, attributes)
+	return nil
 }
