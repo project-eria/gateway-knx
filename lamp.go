@@ -30,7 +30,7 @@ func lampDim(dev *device.Device, args map[string]interface{}) map[string]interfa
 		if confGroup, in := _configByXAAL[dev.Address]["dimTarget"]; in {
 			data := dpt.DPT_5001(valueInt).Pack()
 			logger.Module("main:lamp").WithFields(logger.Fields{"address": dev.Address, "target": valueInt}).Debug("Dimming Lamp")
-			if err := sendKNX(confGroup.group, data); err != nil {
+			if err := sendKNX(confGroup.groupWrite, data); err != nil {
 				logger.Module("main:lamp").Error(err)
 			}
 		}
@@ -43,10 +43,11 @@ func lampDim(dev *device.Device, args map[string]interface{}) map[string]interfa
 func lampOnOffSend(address string, value bool) {
 	if confGroup, in := _configByXAAL[address]["light"]; in {
 		data := dpt.DPT_1001(value).Pack()
-
-		if err := sendKNX(confGroup.group, data); err != nil {
+		if err := sendKNX(confGroup.groupWrite, data); err != nil {
 			logger.Module("main:lamp").Error(err)
 		}
+	} else {
+		logger.Module("main:lamp").WithField("addr", address).Warn("Missing KNX group for 'light'")
 	}
 }
 

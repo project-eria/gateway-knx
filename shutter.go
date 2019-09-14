@@ -32,9 +32,13 @@ func shutterPosition(dev *device.Device, args map[string]interface{}) map[string
 	if ok {
 		valueInt := float32(value.(float64))
 		if confGroup, in := _configByXAAL[dev.Address]["position"]; in {
+			if confGroup.InvertValue {
+				valueInt = 100 - valueInt // Invert 0%=>Close 100%=>Open
+			}
+
 			data := dpt.DPT_5001(valueInt).Pack()
 			logger.Module("main:lamp").WithFields(logger.Fields{"address": dev.Address, "target": valueInt}).Debug("Moving Shutter")
-			if err := sendKNX(confGroup.group, data); err != nil {
+			if err := sendKNX(confGroup.groupWrite, data); err != nil {
 				logger.Module("main:shutter").Error(err)
 			}
 		}
@@ -48,9 +52,11 @@ func shutterSend(address string, value bool) {
 	if confGroup, in := _configByXAAL[address]["action"]; in {
 		data := dpt.DPT_1009(value).Pack()
 
-		if err := sendKNX(confGroup.group, data); err != nil {
+		if err := sendKNX(confGroup.groupWrite, data); err != nil {
 			logger.Module("main:shutter").Error(err)
 		}
+	} else {
+		logger.Module("main:shutter").WithField("addr", address).Warn("Missing KNX group for 'action'")
 	}
 }
 
@@ -70,10 +76,10 @@ func shutterNotification(address string, attribute string, data []byte) error {
 		if err != nil {
 			return fmt.Errorf("Unpacking '%s' data has failed (%s)", attribute, err)
 		}
-		fmt.Println(unpackedData)
-		fmt.Printf("%#v %+v\n", unpackedData, unpackedData)
-		fmt.Println(int(unpackedData))
 		dataInt := int(math.Round(float64(unpackedData))) //Fix for https://github.com/vapourismo/knx-go/issues/23
+		if _configByXAAL[address]["position"].InvertValue {
+			dataInt = 100 - dataInt // Invert 0%=>Close 100%=>Open
+		}
 		attributes["position"] = dataInt
 	default:
 		return fmt.Errorf("Notification for '%s' attribute is not implemented", attribute)

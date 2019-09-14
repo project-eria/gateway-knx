@@ -49,17 +49,20 @@ type configDevice struct {
 }
 
 type configGroup struct {
-	GrpAddr   string
-	Attribute string
-	group     cemi.GroupAddr
-	device    *configDevice
+	Attribute    string
+	InvertValue  bool `default:"false"`
+	GrpAddrState string
+	GrpAddrWrite string
+	groupWrite   cemi.GroupAddr
+	device       *configDevice
 }
 
 var _devs map[string]*device.Device
 
 // For direct access
 var _configByXAAL map[string]map[string]*configGroup
-var _configByKNX map[string]*configGroup
+var _configByKNXWrite map[string]*configGroup
+var _configByKNXState map[string]*configGroup
 
 var client knx.GroupTunnel
 
@@ -116,7 +119,8 @@ func main() {
 func setup() {
 	_devs = map[string]*device.Device{}
 	_configByXAAL = map[string]map[string]*configGroup{}
-	_configByKNX = map[string]*configGroup{}
+	_configByKNXState = map[string]*configGroup{}
+	_configByKNXWrite = map[string]*configGroup{}
 
 	// gw
 	gw, _ := schemas.Gateway(config.GWXaalAddr)
@@ -150,17 +154,26 @@ func setup() {
 		for i := range confDev.Groups {
 			confGroup := &confDev.Groups[i]
 			confGroup.device = confDev
-			group, err := cemi.NewGroupAddrString(confGroup.GrpAddr)
-			if err != nil {
-				logger.Module("main").WithError(err).Warn()
-			} else {
-				confGroup.group = group
-				_configByKNX[confGroup.GrpAddr] = confGroup
-				if _, in := _configByXAAL[confDev.XaalAddr]; !in {
-					_configByXAAL[confDev.XaalAddr] = map[string]*configGroup{}
+
+			if confGroup.GrpAddrWrite != "" {
+				group, err := cemi.NewGroupAddrString(confGroup.GrpAddrWrite)
+				if err != nil {
+					logger.Module("main").WithError(err).Warn()
+					break
 				}
-				_configByXAAL[confDev.XaalAddr][confGroup.Attribute] = confGroup
+				confGroup.groupWrite = group
+				_configByKNXWrite[confGroup.GrpAddrWrite] = confGroup
 			}
+
+			if confGroup.GrpAddrState != "" {
+				_configByKNXState[confGroup.GrpAddrState] = confGroup
+			}
+
+			if _, in := _configByXAAL[confDev.XaalAddr]; !in {
+				_configByXAAL[confDev.XaalAddr] = map[string]*configGroup{}
+			}
+			_configByXAAL[confDev.XaalAddr][confGroup.Attribute] = confGroup
+
 		}
 	}
 	gw.SetAttributeValue("embedded", addresses)
@@ -175,18 +188,18 @@ func updateFromXAAL(msg *message.Message) {
 func updateFromKNX() {
 	// The inbound channel is closed with the connection.
 	for msg := range client.Inbound() {
-		//fmt.Printf("%+v\n", msg)
 		addrKNX := msg.Destination.String()
 		logger.Module("main").WithField("addrKNX", addrKNX).Debug("Received KNX message from")
-		if confGroup, in := _configByKNX[addrKNX]; in {
+		if confGroup, in := _configByKNXState[addrKNX]; in {
 			addrXAAL := confGroup.device.XaalAddr
 			attribute := confGroup.Attribute
 			typeXAAL := confGroup.device.Type
+			logger.Module("main").WithField("group", addrKNX).Debug("KNX State group found, process notification")
 			if err := processKNXEvent(addrXAAL, typeXAAL, attribute, msg.Data); err != nil {
 				logger.Module("main").WithError(err).Error()
 			}
 		} else {
-			logger.Module("main").WithField("group", addrKNX).Debug("KNX group not in config")
+			logger.Module("main").WithField("group", addrKNX).Debug("KNX State group not in config, ignoring")
 		}
 	}
 }
