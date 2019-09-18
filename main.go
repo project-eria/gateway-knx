@@ -26,10 +26,10 @@ var (
 
 const configFile = "gateway-knx.json"
 
-func setupDev(dev *device.Device) {
+func setupDev(dev *device.Device, info string) {
 	dev.VendorID = "ERIA"
-	dev.ProductID = "KNXIPGateway"
-	dev.Info = "gateway.knx"
+	dev.ProductID = "KNXIP"
+	dev.Info = info
 	dev.Version = Version
 }
 
@@ -127,7 +127,6 @@ func setup() {
 
 	var addresses []string
 	for i := range config.Devices {
-
 		confDev := &config.Devices[i]
 		if confDev.XaalAddr == "" {
 			confDev.XaalAddr = utils.GetRandomUUID()
@@ -146,7 +145,7 @@ func setup() {
 				logger.Module("main").WithError(err).Error()
 			}
 
-			setupDev(dev)
+			setupDev(dev, confDev.Name)
 
 			xaal.AddDevice(dev)
 		}
@@ -177,7 +176,7 @@ func setup() {
 		}
 	}
 	gw.SetAttributeValue("embedded", addresses)
-	setupDev(gw)
+	setupDev(gw, fmt.Sprintf("IP Gateway [%s]", config.GatewayIP))
 	xaal.AddDevice(gw)
 }
 
