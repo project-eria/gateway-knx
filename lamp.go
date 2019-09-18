@@ -27,15 +27,21 @@ func lampDim(dev *device.Device, args map[string]interface{}) map[string]interfa
 	value, ok := args["target"]
 	if ok {
 		valueInt := float32(value.(float64))
-		if confGroup, in := _configByXAAL[dev.Address]["dimTarget"]; in {
+		if confGroup, in := _configByXAAL[dev.Address]["dimmer"]; in {
 			data := dpt.DPT_5001(valueInt).Pack()
-			logger.Module("main:lamp").WithFields(logger.Fields{"address": dev.Address, "target": valueInt}).Debug("Dimming Lamp")
-			if err := sendKNX(confGroup.groupWrite, data); err != nil {
-				logger.Module("main:lamp").Error(err)
+			if confGroup.groupWrite != nil {
+				logger.Module("main:lamp").WithFields(logger.Fields{"address": dev.Address, "target": valueInt}).Debug("Dimming Lamp")
+				if err := sendKNX(confGroup.groupWrite, data); err != nil {
+					logger.Module("main:lamp").Error(err)
+				}
+			} else {
+				logger.Module("main:lamp").Error("Missing write groupe configuration for 'dimmer'")
 			}
+		} else {
+			logger.Module("main:lamp").Error("Missing 'dimmer' configuration")
 		}
 	} else {
-		logger.Module("main:lamp").Error("Missing 'dimTarget' parameter")
+		logger.Module("main:lamp").Error("Missing 'target' parameter")
 	}
 	return nil
 }

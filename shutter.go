@@ -35,15 +35,21 @@ func shutterPosition(dev *device.Device, args map[string]interface{}) map[string
 			if confGroup.InvertValue {
 				valueInt = 100 - valueInt // Invert 0%=>Close 100%=>Open
 			}
-
 			data := dpt.DPT_5001(valueInt).Pack()
-			logger.Module("main:lamp").WithFields(logger.Fields{"address": dev.Address, "target": valueInt}).Debug("Moving Shutter")
-			if err := sendKNX(confGroup.groupWrite, data); err != nil {
-				logger.Module("main:shutter").Error(err)
+			if confGroup.groupWrite != nil {
+				logger.Module("main:shutter").WithFields(logger.Fields{"address": dev.Address, "target": valueInt}).Debug("Moving Shutter")
+
+				if err := sendKNX(confGroup.groupWrite, data); err != nil {
+					logger.Module("main:shutter").Error(err)
+				}
+			} else {
+				logger.Module("main:shutter").Error("Missing write groupe configuration for 'position'")
 			}
+		} else {
+			logger.Module("main:shutter").Error("Missing 'position' configuration")
 		}
 	} else {
-		logger.Module("main:shutter").Error("Missing 'position' parameter")
+		logger.Module("main:shutter").Error("Missing 'target' value")
 	}
 	return nil
 }

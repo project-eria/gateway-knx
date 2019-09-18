@@ -53,7 +53,7 @@ type configGroup struct {
 	InvertValue  bool `default:"false"`
 	GrpAddrState string
 	GrpAddrWrite string
-	groupWrite   cemi.GroupAddr
+	groupWrite   *cemi.GroupAddr
 	device       *configDevice
 }
 
@@ -160,7 +160,7 @@ func setup() {
 					logger.Module("main").WithError(err).Warn()
 					break
 				}
-				confGroup.groupWrite = group
+				confGroup.groupWrite = &group
 				_configByKNXWrite[confGroup.GrpAddrWrite] = confGroup
 			}
 

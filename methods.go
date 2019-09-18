@@ -60,12 +60,12 @@ func sendXAAL(address string, attributes map[string]interface{}) {
 	xaal.NotifyAttributesChange(device)
 }
 
-func sendKNX(group cemi.GroupAddr, data []byte) error {
+func sendKNX(group *cemi.GroupAddr, data []byte) error {
 	logger.Module("main").WithField("group", group).Debug("Sending KNX")
 
 	event := knx.GroupEvent{
 		Command:     knx.GroupWrite,
-		Destination: group,
+		Destination: *group,
 		Data:        data,
 	}
 
