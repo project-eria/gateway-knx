@@ -38,8 +38,8 @@ github.com/project-eria/eria-logger v0.0.1 h1:xdHoVqlYjpwQYwcprqaFF9YRW0xPn4XtqG
 github.com/project-eria/eria-logger v0.0.1/go.mod h1:42rdkUfidAC5vCfQGDnrLJHDJLxogERJt5vmbiEq9YA=
 github.com/project-eria/xaal-go v0.5.0 h1:ouaGReUAkyNaMnlREhJDw7L0jw3sWD+A5pJE9qfeP2U=
 github.com/project-eria/xaal-go v0.5.0/go.mod h1:C/c26bhm6YmsJOvw9Rp0BNJhI30uS1Grh59xzRmV2KU=
-github.com/project-eria/xaal-go v0.5.1 h1:tsJgBNZ6EwUeWcylg309CEtzsk6ARq0SFtZ57SPNe88=
-github.com/project-eria/xaal-go v0.5.1/go.mod h1:C/c26bhm6YmsJOvw9Rp0BNJhI30uS1Grh59xzRmV2KU=
+github.com/project-eria/xaal-go v0.5.2 h1:eMNG0bK3pvRPI7WDPaU/tZrI4FWs8joZ6rwY36CtNwk=
+github.com/project-eria/xaal-go v0.5.2/go.mod h1:C/c26bhm6YmsJOvw9Rp0BNJhI30uS1Grh59xzRmV2KU=
 github.com/sirupsen/logrus v1.4.2 h1:SPIRibHv4MatM3XXNO2BJeFLZwZ2LvZgfQ5+UNI2im4=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
