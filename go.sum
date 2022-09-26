@@ -21,10 +21,10 @@ github.com/klauspost/compress v1.15.1/go.mod h1:/3/Vjq9QcHkK5uEr5lBEmyoZ1iFhe47e
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/project-eria/eria-core v1.0.0 h1:cwhQoyi2nIaO1ABYeFltFBHsQhAdG7I60Y8ppjbFipU=
-github.com/project-eria/eria-core v1.0.0/go.mod h1:n5Xexiv9b0FZt/dBAPY5hxFtlLW6y3/6dd6hE2V4OU4=
-github.com/project-eria/go-wot v1.0.0 h1:69PAzwwxBRnICg3BkkKhB0rD4wSabv6Jv885A4e9F88=
-github.com/project-eria/go-wot v1.0.0/go.mod h1:6FF1BQ+vyQKfGFTfgdBkMp6hLHbwfvWyAeMyzclpejU=
+github.com/project-eria/eria-core v1.0.1 h1:fUlbIuqobTu7qaP/TQ9BhJoMKfJ5P9Q2K5nTlUbjwjM=
+github.com/project-eria/eria-core v1.0.1/go.mod h1:Onmmw0Rz2y2rFh9h4gGiGO9o8hFQuDkEQjsO8ks2aPY=
+github.com/project-eria/go-wot v1.0.1 h1:8lhSOFJWCxMo1V574qiUprAP70pje9SVow7cDTclk5o=
+github.com/project-eria/go-wot v1.0.1/go.mod h1:49VO03U4FTvygQ2T2rYGM3NznUUohKgcbyBCXVJSUZ4=
 github.com/rs/xid v1.3.0/go.mod h1:trrq9SKmegXys3aeAKXMUTdJsYXVwGY3RLcfgqegfbg=
 github.com/rs/zerolog v1.26.1 h1:/ihwxqH+4z8UxyI70wM1z9yCvkWcfz/a3mj48k/Zngc=
 github.com/rs/zerolog v1.26.1/go.mod h1:/wSSJWX7lVrsOwlbyTRSOJvqRlc+WjWlfes+CiJ+tmc=
