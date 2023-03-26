@@ -10,11 +10,6 @@ import (
 	"github.com/vapourismo/knx-go/knx/cemi"
 )
 
-var (
-	// Version is a placeholder that will receive the git tag version during build time
-	Version = "-"
-)
-
 var config = struct {
 	Host        string         `yaml:"host"`
 	Port        uint           `yaml:"port" default:"80"`
@@ -57,7 +52,7 @@ var _groupByKNXState map[string]*configStatesGroup
 var client knx.GroupTunnel
 
 func init() {
-	eria.Init("ERIA KNX Gateway", Version)
+	eria.Init("ERIA KNX Gateway")
 }
 
 func main() {
@@ -85,7 +80,7 @@ func main() {
 	// Close upon exiting. Even if the gateway closes the connection, we still have to clean up.
 	defer client.Close()
 
-	eriaServer := eria.NewServer(config.Host, config.Port, config.ExposedAddr)
+	eriaServer := eria.NewServer(config.Host, config.Port, config.ExposedAddr, "")
 
 	setupThings(eriaServer)
 
@@ -105,7 +100,7 @@ func setupThings(eriaServer *eria.EriaServer) {
 
 		td, _ := eria.NewThingDescription(
 			"eria:gateway:knx:"+confDev.Ref,
-			Version,
+			eria.AppVersion,
 			confDev.Ref,
 			confDev.Name,
 			confDev.Capabilities,

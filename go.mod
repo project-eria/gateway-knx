@@ -1,30 +1,32 @@
 module gateway-knx
 
-go 1.17
+go 1.19
 
 require (
-	github.com/project-eria/eria-core v1.0.2
-	github.com/rs/zerolog v1.26.1
+	github.com/project-eria/eria-core v1.1.0
+	github.com/rs/zerolog v1.28.0
 	github.com/vapourismo/knx-go v0.0.0-20200220204125-dd963bbc67db
 )
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/fasthttp/websocket v1.5.0 // indirect
-	github.com/gofiber/fiber/v2 v2.31.0 // indirect
-	github.com/gofiber/websocket/v2 v2.0.20 // indirect
-	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/klauspost/compress v1.15.1 // indirect
-	github.com/project-eria/go-wot v1.0.2 // indirect
-	github.com/savsgio/gotils v0.0.0-20220401102855-e56b59f40436 // indirect
+	github.com/gofiber/fiber/v2 v2.38.1 // indirect
+	github.com/gofiber/websocket/v2 v2.1.0 // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/klauspost/compress v1.15.11 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
+	github.com/project-eria/go-wot v1.1.0 // indirect
+	github.com/savsgio/gotils v0.0.0-20220530130905-52f3993e8d6d // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.35.0 // indirect
+	github.com/valyala/fasthttp v1.40.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-// replace github.com/project-eria/go-wot => ../go-wot
+//replace github.com/project-eria/go-wot => ../go-wot
 
-// replace github.com/project-eria/eria-core => ../eria-core
+//replace github.com/project-eria/eria-core => ../eria-core
