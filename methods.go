@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/project-eria/eria-core"
+	zlog "github.com/rs/zerolog/log"
 
-	"github.com/rs/zerolog/log"
 	"github.com/vapourismo/knx-go/knx"
 	"github.com/vapourismo/knx-go/knx/cemi"
 )
@@ -15,7 +15,7 @@ type knxThing interface {
 }
 
 func newKNXThing(config *configDevice, t *eria.EriaThing) (knxThing, error) {
-	log.Info().Str("device", config.Ref).Msg("[main] new KNX Thing")
+	zlog.Info().Str("device", config.Ref).Msg("[main] new KNX Thing")
 
 	var knxthing knxThing
 	switch config.Type {
@@ -36,14 +36,14 @@ func newKNXThing(config *configDevice, t *eria.EriaThing) (knxThing, error) {
 	}
 
 	if err := knxthing.linkHandlers(); err != nil {
-		log.Error().Err(err).Msg("[main]")
+		zlog.Error().Err(err).Msg("[main]")
 	}
 
 	return knxthing, nil
 }
 
 func sendKNX(group *cemi.GroupAddr, data []byte) error {
-	log.Trace().Stringer("group", group).Msg("[main] Sending KNX")
+	zlog.Trace().Stringer("group", group).Msg("[main] Sending KNX")
 
 	event := knx.GroupEvent{
 		Command:     knx.GroupWrite,

@@ -6,7 +6,7 @@ import (
 
 	"github.com/project-eria/eria-core"
 
-	"github.com/rs/zerolog/log"
+	zlog "github.com/rs/zerolog/log"
 	"github.com/vapourismo/knx-go/knx/dpt"
 )
 
@@ -33,7 +33,7 @@ func (w *watermeter) linkHandlers() error {
 }
 
 func (w *watermeter) processKNXLiters(data []byte, _ bool) error {
-	log.Trace().Msg("[main] Received watermeter 'liters' notification")
+	zlog.Trace().Msg("[main] Received watermeter 'liters' notification")
 
 	var unpackedData dpt.DPT_12001
 	err := unpackedData.Unpack(data)

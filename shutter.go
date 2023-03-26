@@ -7,7 +7,7 @@ import (
 
 	"github.com/project-eria/eria-core"
 
-	"github.com/rs/zerolog/log"
+	zlog "github.com/rs/zerolog/log"
 	"github.com/vapourismo/knx-go/knx/dpt"
 )
 
@@ -64,10 +64,10 @@ func (s *shutter) shutterSend(value bool) {
 	if confGroup, in := s.Actions["open"]; in {
 		data := dpt.DPT_1009(value).Pack()
 		if err := sendKNX(confGroup.groupWrite, data); err != nil {
-			log.Error().Str("device", s.Ref).Err(err).Msg("[main:shutterSend]")
+			zlog.Error().Str("device", s.Ref).Err(err).Msg("[main:shutterSend]")
 		}
 	} else {
-		log.Warn().Str("device", s.Ref).Msg("[main:shutterSend] Missing KNX group for 'open'")
+		zlog.Warn().Str("device", s.Ref).Msg("[main:shutterSend] Missing KNX group for 'open'")
 	}
 }
 
@@ -80,22 +80,22 @@ func (s *shutter) shutterSetPosition(data interface{}) (interface{}, error) {
 		}
 		data := dpt.DPT_5001(targetEffective).Pack()
 		if confGroup.groupWrite != nil {
-			log.Trace().Str("device", s.Ref).Float32("targetEffective", targetEffective).Msg("[main:shutterPosition] Moving Shutter")
+			zlog.Trace().Str("device", s.Ref).Float32("targetEffective", targetEffective).Msg("[main:shutterPosition] Moving Shutter")
 
 			if err := sendKNX(confGroup.groupWrite, data); err != nil {
-				log.Error().Err(err).Msg("[main:shutterPosition]")
+				zlog.Error().Err(err).Msg("[main:shutterPosition]")
 			}
 		} else {
-			log.Error().Msg("[main:shutterPosition] Missing write groupe configuration for 'set'")
+			zlog.Error().Msg("[main:shutterPosition] Missing write groupe configuration for 'set'")
 		}
 	} else {
-		log.Error().Msg("[main:shutterPosition] Missing 'set' configuration")
+		zlog.Error().Msg("[main:shutterPosition] Missing 'set' configuration")
 	}
 	return nil, nil
 }
 
 // func (s *shutter) processKNXOpen(data []byte, invertValue bool) error {
-// 	log.Trace().Msg("[main] Received shutter 'opening' notification")
+// 	zlog.Trace().Msg("[main] Received shutter 'opening' notification")
 
 // 	var unpackedData dpt.DPT_1009
 // 	err := unpackedData.Unpack(data)
@@ -104,13 +104,13 @@ func (s *shutter) shutterSetPosition(data interface{}) (interface{}, error) {
 // 	}
 // 	value := (strings.ToLower(unpackedData.String()) == "open")
 
-// 	log.Trace().Bool("value", value).Msg("[main] openning value")
+// 	zlog.Trace().Bool("value", value).Msg("[main] openning value")
 // 	s.SetPropertyValue("open", value)
 // 	return nil
 // }
 
 func (s *shutter) processKNXPosition(data []byte, invertValue bool) error {
-	log.Trace().Msg("[main] Received shutter 'position' notification")
+	zlog.Trace().Msg("[main] Received shutter 'position' notification")
 
 	var unpackedData dpt.DPT_5001
 	err := unpackedData.Unpack(data)
@@ -121,7 +121,7 @@ func (s *shutter) processKNXPosition(data []byte, invertValue bool) error {
 	if invertValue {
 		value = 100 - value // Invert 0%=>Close 100%=>Open
 	}
-	log.Trace().Int("value", value).Msg("[main] position value")
+	zlog.Trace().Int("value", value).Msg("[main] position value")
 	s.SetPropertyValue("position", value)
 	s.SetPropertyValue("open", (value > 0))
 	return nil

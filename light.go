@@ -8,7 +8,7 @@ import (
 
 	"github.com/project-eria/eria-core"
 
-	"github.com/rs/zerolog/log"
+	zlog "github.com/rs/zerolog/log"
 	"github.com/vapourismo/knx-go/knx/dpt"
 )
 
@@ -54,17 +54,17 @@ func (l *light) lampFade(data interface{}) (interface{}, error) {
 	if confGroup, in := l.Actions["fade"]; in {
 		payload := dpt.DPT_5001(brightness).Pack()
 		if confGroup.groupWrite != nil {
-			log.Trace().Str("device", l.Ref).Float32("brightness", brightness).Msg("[main:lampFade] Dimming Lamp")
+			zlog.Trace().Str("device", l.Ref).Float32("brightness", brightness).Msg("[main:lampFade] Dimming Lamp")
 			if err := sendKNX(confGroup.groupWrite, payload); err != nil {
-				log.Error().Str("device", l.Ref).Err(err).Msg("[main:lampFade]")
+				zlog.Error().Str("device", l.Ref).Err(err).Msg("[main:lampFade]")
 				return nil, err
 			}
 		} else {
-			log.Error().Str("device", l.Ref).Msg("[main:lampFade] Missing write groupe configuration for 'fade'")
+			zlog.Error().Str("device", l.Ref).Msg("[main:lampFade] Missing write groupe configuration for 'fade'")
 			return nil, errors.New("missing write groupe configuration for 'fade'")
 		}
 	} else {
-		log.Error().Str("device", l.Ref).Msg("[main:lampFade] Missing 'fade' configuration")
+		zlog.Error().Str("device", l.Ref).Msg("[main:lampFade] Missing 'fade' configuration")
 		return nil, errors.New("missing 'fade' configuration")
 	}
 	return brightness, nil
@@ -74,15 +74,15 @@ func (l *light) lampOnOffSend(value bool) {
 	if confGroup, in := l.Actions["toggle"]; in {
 		data := dpt.DPT_1001(value).Pack()
 		if err := sendKNX(confGroup.groupWrite, data); err != nil {
-			log.Error().Err(err).Msg("[main:lampOnOffSend]")
+			zlog.Error().Err(err).Msg("[main:lampOnOffSend]")
 		}
 	} else {
-		log.Warn().Str("device", l.Ref).Msg("[main:lampOnOffSend] Missing KNX group for 'light'")
+		zlog.Warn().Str("device", l.Ref).Msg("[main:lampOnOffSend] Missing KNX group for 'light'")
 	}
 }
 
 func (l *light) processKNXOn(data []byte, _ bool) error {
-	log.Trace().Msg("[main] Received light 'on' notification")
+	zlog.Trace().Msg("[main] Received light 'on' notification")
 
 	var unpackedData dpt.DPT_1001
 	err := unpackedData.Unpack(data)
@@ -95,7 +95,7 @@ func (l *light) processKNXOn(data []byte, _ bool) error {
 }
 
 func (l *light) processKNXBrightness(data []byte, _ bool) error {
-	log.Trace().Msg("[main] Received light 'brightness' notification")
+	zlog.Trace().Msg("[main] Received light 'brightness' notification")
 
 	var unpackedData dpt.DPT_5001
 	err := unpackedData.Unpack(data)

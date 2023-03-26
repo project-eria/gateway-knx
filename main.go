@@ -5,7 +5,7 @@ import (
 	"time"
 
 	eria "github.com/project-eria/eria-core"
-	"github.com/rs/zerolog/log"
+	zlog "github.com/rs/zerolog/log"
 	"github.com/vapourismo/knx-go/knx"
 	"github.com/vapourismo/knx-go/knx/cemi"
 )
@@ -57,7 +57,7 @@ func init() {
 
 func main() {
 	defer func() {
-		log.Info().Msg("[main] Stopped")
+		zlog.Info().Msg("[main] Stopped")
 	}()
 
 	// Loading config
@@ -74,7 +74,7 @@ func main() {
 	var err error
 	client, err = knx.NewGroupTunnel(GWAddr, knxConfig)
 	if err != nil {
-		log.Fatal().Err(err).Msg("[main] Can connect KNX IP Gateway")
+		zlog.Fatal().Err(err).Msg("[main] Can connect KNX IP Gateway")
 	}
 
 	// Close upon exiting. Even if the gateway closes the connection, we still have to clean up.
@@ -110,7 +110,7 @@ func setupThings(eriaServer *eria.EriaServer) {
 
 		_, err := newKNXThing(confDev, eriaThing)
 		if err != nil {
-			log.Error().Str("device", confDev.Ref).Err(err).Msg("[main]")
+			zlog.Error().Str("device", confDev.Ref).Err(err).Msg("[main]")
 			continue
 		}
 
@@ -118,7 +118,7 @@ func setupThings(eriaServer *eria.EriaServer) {
 			conf := conf
 			group, err := cemi.NewGroupAddrString(conf.GrpAddr)
 			if err != nil {
-				log.Warn().Err(err).Msg("[main]")
+				zlog.Warn().Err(err).Msg("[main]")
 				break
 			}
 			conf.groupWrite = &group
@@ -131,14 +131,14 @@ func updateFromKNX() {
 	// The inbound channel is closed with the connection.
 	for msg := range client.Inbound() {
 		addrKNX := msg.Destination.String()
-		log.Trace().Str("addrKNX", addrKNX).Msg("[main] Received KNX message from")
+		zlog.Trace().Str("addrKNX", addrKNX).Msg("[main] Received KNX message from")
 		if confGroup, in := _groupByKNXState[addrKNX]; in {
-			log.Trace().Str("group", addrKNX).Msg("[main] KNX State group found, process notification")
+			zlog.Trace().Str("group", addrKNX).Msg("[main] KNX State group found, process notification")
 			if err := confGroup.handler(msg.Data, confGroup.InvertValue); err != nil {
-				log.Error().Err(err).Msg("[main]")
+				zlog.Error().Err(err).Msg("[main]")
 			}
 		} else {
-			log.Trace().Str("group", addrKNX).Msg("[main] KNX State group not in config, ignoring")
+			zlog.Trace().Str("group", addrKNX).Msg("[main] KNX State group not in config, ignoring")
 		}
 	}
 }
