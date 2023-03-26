@@ -18,8 +18,7 @@ func newKNXThing(config *configDevice, t *eria.EriaThing) (knxThing, error) {
 	log.Info().Str("device", config.Ref).Msg("[main] new KNX Thing")
 
 	var knxthing knxThing
-	mainCapability := config.Capabilities[0]
-	switch mainCapability {
+	switch config.Type {
 	case "LightBasic", "LightDimmer":
 		knxthing = &light{
 			configDevice: config,
@@ -33,7 +32,7 @@ func newKNXThing(config *configDevice, t *eria.EriaThing) (knxThing, error) {
 			configDevice: config,
 			EriaThing:    t}
 	default:
-		return nil, errors.New(mainCapability + " capability hasn't been implemented yet")
+		return nil, errors.New(config.Type + " type hasn't been implemented yet")
 	}
 
 	if err := knxthing.linkHandlers(); err != nil {

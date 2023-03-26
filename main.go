@@ -25,11 +25,11 @@ type configGateway struct {
 }
 
 type configDevice struct {
-	Capabilities []string                       `yaml:"capabilities"`
-	Name         string                         `yaml:"name"`
-	Ref          string                         `yaml:"ref"`
-	States       map[string]*configStatesGroup  `yaml:"states"`
-	Actions      map[string]*configActionsGroup `yaml:"actions"`
+	Type    string                         `yaml:"type"`
+	Name    string                         `yaml:"name"`
+	Ref     string                         `yaml:"ref"`
+	States  map[string]*configStatesGroup  `yaml:"states"`
+	Actions map[string]*configActionsGroup `yaml:"actions"`
 }
 
 type configStatesGroup struct {
@@ -103,7 +103,7 @@ func setupThings(eriaServer *eria.EriaServer) {
 			eria.AppVersion,
 			confDev.Ref,
 			confDev.Name,
-			confDev.Capabilities,
+			[]string{confDev.Type},
 		)
 
 		eriaThing, _ := eriaServer.AddThing(confDev.Ref, td)

@@ -17,17 +17,18 @@ type shutter struct {
 }
 
 func (s *shutter) linkHandlers() error {
-	for _, capability := range s.Capabilities {
-		switch capability {
-		case "ShutterBasic":
-			s.SetActionHandler("open", s.shutterOpen)
-			s.SetActionHandler("close", s.shutterClose)
-			//s.SetActionHandler("stop", s.shutterStop)
-		case "ShutterPosition":
-			s.SetActionHandler("setPosition", s.shutterSetPosition)
-		default:
-			return fmt.Errorf("'%s' capability hasn't been implemented yet", capability)
-		}
+	switch s.Type {
+	case "ShutterBasic":
+		s.SetActionHandler("open", s.shutterOpen)
+		s.SetActionHandler("close", s.shutterClose)
+		//s.SetActionHandler("stop", s.shutterStop)
+	case "ShutterPosition":
+		s.SetActionHandler("open", s.shutterOpen)
+		s.SetActionHandler("close", s.shutterClose)
+		//s.SetActionHandler("stop", s.shutterStop)
+		s.SetActionHandler("setPosition", s.shutterSetPosition)
+	default:
+		return fmt.Errorf("'%s' type hasn't been implemented yet", s.Type)
 	}
 
 	for key, conf := range s.States {
@@ -73,7 +74,7 @@ func (s *shutter) shutterSend(value bool) {
 func (s *shutter) shutterSetPosition(data interface{}) (interface{}, error) {
 	target := float32(data.(float64))
 	targetEffective := target
-	if confGroup, in := s.Actions["position"]; in {
+	if confGroup, in := s.Actions["set"]; in {
 		if confGroup.InvertValue {
 			targetEffective = 100 - targetEffective // Invert 0%=>Close 100%=>Open
 		}
@@ -85,10 +86,10 @@ func (s *shutter) shutterSetPosition(data interface{}) (interface{}, error) {
 				log.Error().Err(err).Msg("[main:shutterPosition]")
 			}
 		} else {
-			log.Error().Msg("[main:shutterPosition] Missing write groupe configuration for 'position'")
+			log.Error().Msg("[main:shutterPosition] Missing write groupe configuration for 'set'")
 		}
 	} else {
-		log.Error().Msg("[main:shutterPosition] Missing 'position' configuration")
+		log.Error().Msg("[main:shutterPosition] Missing 'set' configuration")
 	}
 	return nil, nil
 }

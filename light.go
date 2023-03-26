@@ -18,16 +18,16 @@ type light struct {
 }
 
 func (l *light) linkHandlers() error {
-	for _, capability := range l.Capabilities {
-		switch capability {
-		case "LightBasic":
-			l.SetActionHandler("toggle", l.lampToggle)
-		case "LightDimmer":
-			l.SetActionHandler("fade", l.lampFade)
-		default:
-			return fmt.Errorf("'%s' capability hasn't been implemented yet", capability)
-		}
+	switch l.Type {
+	case "LightBasic":
+		l.SetActionHandler("toggle", l.lampToggle)
+	case "LightDimmer":
+		l.SetActionHandler("toggle", l.lampToggle)
+		l.SetActionHandler("fade", l.lampFade)
+	default:
+		return fmt.Errorf("'%s' type hasn't been implemented yet", l.Type)
 	}
+
 	for key, conf := range l.States {
 		conf := conf
 		switch key {
@@ -51,7 +51,7 @@ func (l *light) lampToggle(data interface{}) (interface{}, error) {
 
 func (l *light) lampFade(data interface{}) (interface{}, error) {
 	brightness := float32(data.(float64))
-	if confGroup, in := l.Actions["dimmer"]; in {
+	if confGroup, in := l.Actions["fade"]; in {
 		payload := dpt.DPT_5001(brightness).Pack()
 		if confGroup.groupWrite != nil {
 			log.Trace().Str("device", l.Ref).Float32("brightness", brightness).Msg("[main:lampFade] Dimming Lamp")
@@ -60,18 +60,18 @@ func (l *light) lampFade(data interface{}) (interface{}, error) {
 				return nil, err
 			}
 		} else {
-			log.Error().Str("device", l.Ref).Msg("[main:lampFade] Missing write groupe configuration for 'dimmer'")
-			return nil, errors.New("missing write groupe configuration for 'dimmer'")
+			log.Error().Str("device", l.Ref).Msg("[main:lampFade] Missing write groupe configuration for 'fade'")
+			return nil, errors.New("missing write groupe configuration for 'fade'")
 		}
 	} else {
-		log.Error().Str("device", l.Ref).Msg("[main:lampFade] Missing 'dimmer' configuration")
-		return nil, errors.New("missing 'dimmer' configuration")
+		log.Error().Str("device", l.Ref).Msg("[main:lampFade] Missing 'fade' configuration")
+		return nil, errors.New("missing 'fade' configuration")
 	}
 	return brightness, nil
 }
 
 func (l *light) lampOnOffSend(value bool) {
-	if confGroup, in := l.Actions["on"]; in {
+	if confGroup, in := l.Actions["toggle"]; in {
 		data := dpt.DPT_1001(value).Pack()
 		if err := sendKNX(confGroup.groupWrite, data); err != nil {
 			log.Error().Err(err).Msg("[main:lampOnOffSend]")
