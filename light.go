@@ -102,7 +102,7 @@ func (l *light) processKNXBrightness(data []byte, _ bool) error {
 	if err != nil {
 		return errors.New("Unpacking 'brightness' data has failed: " + err.Error())
 	}
-	value := uint(math.Round(float64(unpackedData))) //Fix for https://github.com/vapourismo/knx-go/issues/23
+	value := int(math.Round(float64(unpackedData))) //Fix for https://github.com/vapourismo/knx-go/issues/23
 	l.SetPropertyValue("brightness", value)
 
 	return nil
