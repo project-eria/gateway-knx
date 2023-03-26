@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ import (
 /* For Watermeter we use 12.001 as default KNX DTP */
 
 type watermeter struct {
-	*configDevice
+	*ConfigDevice
 	*eria.EriaThing
 }
 

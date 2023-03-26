@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ import (
 )
 
 type light struct {
-	*configDevice
+	*ConfigDevice
 	*eria.EriaThing
 }
 
@@ -53,9 +53,9 @@ func (l *light) lampFade(data interface{}) (interface{}, error) {
 	brightness := float32(data.(float64))
 	if confGroup, in := l.Actions["fade"]; in {
 		payload := dpt.DPT_5001(brightness).Pack()
-		if confGroup.groupWrite != nil {
+		if confGroup.GroupWrite != nil {
 			zlog.Trace().Str("device", l.Ref).Float32("brightness", brightness).Msg("[main:lampFade] Dimming Lamp")
-			if err := sendKNX(confGroup.groupWrite, payload); err != nil {
+			if err := sendKNX(confGroup.GroupWrite, payload); err != nil {
 				zlog.Error().Str("device", l.Ref).Err(err).Msg("[main:lampFade]")
 				return nil, err
 			}
@@ -73,7 +73,7 @@ func (l *light) lampFade(data interface{}) (interface{}, error) {
 func (l *light) lampOnOffSend(value bool) {
 	if confGroup, in := l.Actions["toggle"]; in {
 		data := dpt.DPT_1001(value).Pack()
-		if err := sendKNX(confGroup.groupWrite, data); err != nil {
+		if err := sendKNX(confGroup.GroupWrite, data); err != nil {
 			zlog.Error().Err(err).Msg("[main:lampOnOffSend]")
 		}
 	} else {

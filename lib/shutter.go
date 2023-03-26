@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"errors"
@@ -12,7 +12,7 @@ import (
 )
 
 type shutter struct {
-	*configDevice
+	*ConfigDevice
 	*eria.EriaThing
 }
 
@@ -63,7 +63,7 @@ func (s *shutter) shutterClose(data interface{}) (interface{}, error) {
 func (s *shutter) shutterSend(value bool) {
 	if confGroup, in := s.Actions["open"]; in {
 		data := dpt.DPT_1009(value).Pack()
-		if err := sendKNX(confGroup.groupWrite, data); err != nil {
+		if err := sendKNX(confGroup.GroupWrite, data); err != nil {
 			zlog.Error().Str("device", s.Ref).Err(err).Msg("[main:shutterSend]")
 		}
 	} else {
@@ -79,10 +79,10 @@ func (s *shutter) shutterSetPosition(data interface{}) (interface{}, error) {
 			targetEffective = 100 - targetEffective // Invert 0%=>Close 100%=>Open
 		}
 		data := dpt.DPT_5001(targetEffective).Pack()
-		if confGroup.groupWrite != nil {
+		if confGroup.GroupWrite != nil {
 			zlog.Trace().Str("device", s.Ref).Float32("targetEffective", targetEffective).Msg("[main:shutterPosition] Moving Shutter")
 
-			if err := sendKNX(confGroup.groupWrite, data); err != nil {
+			if err := sendKNX(confGroup.GroupWrite, data); err != nil {
 				zlog.Error().Err(err).Msg("[main:shutterPosition]")
 			}
 		} else {

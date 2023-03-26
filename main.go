@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"gateway-knx/lib"
 	"time"
 
 	eria "github.com/project-eria/eria-core"
@@ -11,12 +12,12 @@ import (
 )
 
 var config = struct {
-	Host        string         `yaml:"host"`
-	Port        uint           `yaml:"port" default:"80"`
-	ExposedAddr string         `yaml:"exposedAddr"`
-	Gateway     configGateway  `yaml:"gateway"`
-	TunnelMode  bool           `yaml:"tunnelMode" default:"false"`
-	Devices     []configDevice `yaml:"devices"`
+	Host        string             `yaml:"host"`
+	Port        uint               `yaml:"port" default:"80"`
+	ExposedAddr string             `yaml:"exposedAddr"`
+	Gateway     configGateway      `yaml:"gateway"`
+	TunnelMode  bool               `yaml:"tunnelMode" default:"false"`
+	Devices     []lib.ConfigDevice `yaml:"devices"`
 }{}
 
 type configGateway struct {
@@ -24,32 +25,7 @@ type configGateway struct {
 	Port int    `yaml:"port" default:"3671"`
 }
 
-type configDevice struct {
-	Type    string                         `yaml:"type"`
-	Name    string                         `yaml:"name"`
-	Ref     string                         `yaml:"ref"`
-	States  map[string]*configStatesGroup  `yaml:"states"`
-	Actions map[string]*configActionsGroup `yaml:"actions"`
-}
-
-type configStatesGroup struct {
-	InvertValue bool   `yaml:"invertValue" default:"false"`
-	GrpAddr     string `yaml:"grpAddr"`
-	handler     func([]byte, bool) error
-}
-
-type configActionsGroup struct {
-	InvertValue bool   `yaml:"invertValue" default:"false"`
-	GrpAddr     string `yaml:"grpAddr"`
-	groupWrite  *cemi.GroupAddr
-}
-
 // var _devs map[string]*device.Device
-
-// For direct access
-var _groupByKNXState map[string]*configStatesGroup
-
-var client knx.GroupTunnel
 
 func init() {
 	eria.Init("ERIA KNX Gateway")
@@ -71,29 +47,23 @@ func main() {
 		ResponseTimeout:   9999 * time.Hour, // Don't stop
 	}
 
-	var err error
-	client, err = knx.NewGroupTunnel(GWAddr, knxConfig)
-	if err != nil {
-		zlog.Fatal().Err(err).Msg("[main] Can connect KNX IP Gateway")
-	}
+	lib.ConnectKNX(GWAddr, knxConfig)
 
 	// Close upon exiting. Even if the gateway closes the connection, we still have to clean up.
-	defer client.Close()
+	defer lib.CloseKNX()
 
 	eriaServer := eria.NewServer(config.Host, config.Port, config.ExposedAddr, "")
 
 	setupThings(eriaServer)
 
 	// Receive messages from the gateway
-	go updateFromKNX()
+	go lib.UpdateFromKNX()
 
 	eriaServer.StartServer()
 }
 
 // setup : create devices, register ...
 func setupThings(eriaServer *eria.EriaServer) {
-	_groupByKNXState = map[string]*configStatesGroup{}
-
 	// var addresses []string
 	for i := range config.Devices {
 		confDev := &config.Devices[i]
@@ -108,7 +78,7 @@ func setupThings(eriaServer *eria.EriaServer) {
 
 		eriaThing, _ := eriaServer.AddThing(confDev.Ref, td)
 
-		_, err := newKNXThing(confDev, eriaThing)
+		_, err := lib.NewKNXThing(confDev, eriaThing)
 		if err != nil {
 			zlog.Error().Str("device", confDev.Ref).Err(err).Msg("[main]")
 			continue
@@ -121,24 +91,8 @@ func setupThings(eriaServer *eria.EriaServer) {
 				zlog.Warn().Err(err).Msg("[main]")
 				break
 			}
-			conf.groupWrite = &group
+			conf.GroupWrite = &group
 		}
 
-	}
-}
-
-func updateFromKNX() {
-	// The inbound channel is closed with the connection.
-	for msg := range client.Inbound() {
-		addrKNX := msg.Destination.String()
-		zlog.Trace().Str("addrKNX", addrKNX).Msg("[main] Received KNX message from")
-		if confGroup, in := _groupByKNXState[addrKNX]; in {
-			zlog.Trace().Str("group", addrKNX).Msg("[main] KNX State group found, process notification")
-			if err := confGroup.handler(msg.Data, confGroup.InvertValue); err != nil {
-				zlog.Error().Err(err).Msg("[main]")
-			}
-		} else {
-			zlog.Trace().Str("group", addrKNX).Msg("[main] KNX State group not in config, ignoring")
-		}
 	}
 }
