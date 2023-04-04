@@ -72,7 +72,7 @@ jobs:
           ${{ env.TAG1 }}
           ${{ env.TAG2 }}
         build-args: |
-          VERSION=${{ GIT_TAG }}
+          VERSION=${{ env.GIT_TAG }}
 
     - name: Show details of image in the registry
       run: |
