@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Git describe
+    - name: Git History # Retrieves the necessary historical information
       id: ghd
       uses: proudust/gh-describe@v1
 
@@ -29,7 +29,7 @@ jobs:
         echo "distance: ${{ steps.ghd.outputs.distance }}"
         echo "sha     : ${{ steps.ghd.outputs.sha }}"
         echo "GIT_SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-        echo "GIT_TAG=$(git describe --tags HEAD)" >> $GITHUB_ENV
+        echo "GIT_TAG=${{ steps.ghd.outputs.describe }}" >> $GITHUB_ENV
         echo "GIT_BRANCH=$(git symbolic-ref -q --short HEAD)" >> $GITHUB_ENV
         echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M')" >> $GITHUB_ENV
 
