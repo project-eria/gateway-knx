@@ -1,4 +1,4 @@
-FROM --platform=${BUILDPLATFORM} golang:1.19-alpine AS build
+FROM --platform=${BUILDPLATFORM} golang:1.20-alpine AS build
 ARG TARGETOS
 ARG TARGETARCH
 ARG VERSION
@@ -9,8 +9,8 @@ RUN echo "Building for $TARGETOS/$TARGETARCH/$VERSION"
 WORKDIR /src
 ENV CGO_ENABLED=0
 COPY go.* .
-COPY . .
 RUN go mod download
+COPY . .
 RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags "-X github.com/project-eria/eria-core.AppVersion=$VERSION -X github.com/project-eria/eria-core.BuildDate=$BUILDDATE" -o /out/app .
 
 # https://medium.com/@mhcbinder/using-local-time-in-a-golang-docker-container-built-from-scratch-2900af02fbaf
