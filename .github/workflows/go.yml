@@ -17,10 +17,17 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Git describe
+      id: ghd
+      uses: proudust/gh-describe@v1
+
     - name: Git ENV
       shell: bash
       run: |
-        git fetch -t
+        echo "describe: ${{ steps.ghd.outputs.describe }}"
+        echo "tag     : ${{ steps.ghd.outputs.tag }}"
+        echo "distance: ${{ steps.ghd.outputs.distance }}"
+        echo "sha     : ${{ steps.ghd.outputs.sha }}"
         echo "GIT_SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         echo "GIT_TAG=$(git describe --tags HEAD)" >> $GITHUB_ENV
         echo "GIT_BRANCH=$(git symbolic-ref -q --short HEAD)" >> $GITHUB_ENV
