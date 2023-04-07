@@ -22,6 +22,7 @@ type configStatesGroup struct {
 	InvertValue bool   `yaml:"invertValue" default:"false"`
 	GrpAddr     string `yaml:"grpAddr"`
 	handler     func([]byte, bool) error
+	GroupRead   *cemi.GroupAddr
 }
 
 type configActionsGroup struct {
@@ -31,7 +32,7 @@ type configActionsGroup struct {
 }
 
 type knxThing interface {
-	linkHandlers() error
+	linkSetup() error
 }
 
 // For direct access
@@ -71,15 +72,15 @@ func NewKNXThing(config *ConfigDevice, t *eria.EriaThing) (knxThing, error) {
 		return nil, errors.New(config.Type + " type hasn't been implemented yet")
 	}
 
-	if err := knxthing.linkHandlers(); err != nil {
+	if err := knxthing.linkSetup(); err != nil {
 		zlog.Error().Err(err).Msg("[main]")
 	}
 
 	return knxthing, nil
 }
 
-func sendKNX(group *cemi.GroupAddr, data []byte) error {
-	zlog.Trace().Stringer("group", group).Msg("[main] Sending KNX")
+func writeKNX(group *cemi.GroupAddr, data []byte) error {
+	zlog.Trace().Stringer("group", group).Msg("[main] Sending GroupWrite KNX")
 
 	event := knx.GroupEvent{
 		Command:     knx.GroupWrite,
@@ -88,6 +89,27 @@ func sendKNX(group *cemi.GroupAddr, data []byte) error {
 	}
 
 	return client.Send(event)
+}
+
+func readKNX(group *cemi.GroupAddr) error {
+	zlog.Trace().Stringer("group", group).Msg("[main] Sending GroupRead KNX")
+
+	event := knx.GroupEvent{
+		Command:     knx.GroupRead,
+		Destination: *group,
+	}
+
+	return client.Send(event)
+}
+
+func (c *ConfigDevice) requestKNXState(state string) {
+	if confGroup, in := c.States[state]; in {
+		if err := readKNX(confGroup.GroupRead); err != nil {
+			zlog.Error().Str("device", c.Ref).Err(err).Msg("[main:requestKNXState]")
+		}
+	} else {
+		zlog.Warn().Str("device", c.Ref).Str("state", state).Msg("[main:requestKNXState] Missing KNX group")
+	}
 }
 
 func UpdateFromKNX() {

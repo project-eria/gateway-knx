@@ -68,6 +68,25 @@ func setupThings(eriaServer *eria.EriaServer) {
 	for i := range config.Devices {
 		confDev := &config.Devices[i]
 
+		for _, conf := range confDev.States {
+			conf := conf
+			group, err := cemi.NewGroupAddrString(conf.GrpAddr)
+			if err != nil {
+				zlog.Warn().Err(err).Msg("[main]")
+				break
+			}
+			conf.GroupRead = &group
+		}
+		for _, conf := range confDev.Actions {
+			conf := conf
+			group, err := cemi.NewGroupAddrString(conf.GrpAddr)
+			if err != nil {
+				zlog.Warn().Err(err).Msg("[main]")
+				break
+			}
+			conf.GroupWrite = &group
+		}
+
 		td, _ := eria.NewThingDescription(
 			"eria:gateway:knx:"+confDev.Ref,
 			eria.AppVersion,
@@ -83,16 +102,5 @@ func setupThings(eriaServer *eria.EriaServer) {
 			zlog.Error().Str("device", confDev.Ref).Err(err).Msg("[main]")
 			continue
 		}
-
-		for _, conf := range confDev.Actions {
-			conf := conf
-			group, err := cemi.NewGroupAddrString(conf.GrpAddr)
-			if err != nil {
-				zlog.Warn().Err(err).Msg("[main]")
-				break
-			}
-			conf.GroupWrite = &group
-		}
-
 	}
 }

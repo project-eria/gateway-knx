@@ -16,7 +16,7 @@ type shutter struct {
 	*eria.EriaThing
 }
 
-func (s *shutter) linkHandlers() error {
+func (s *shutter) linkSetup() error {
 	switch s.Type {
 	case "ShutterBasic":
 		s.SetActionHandler("open", s.shutterOpen)
@@ -42,6 +42,7 @@ func (s *shutter) linkHandlers() error {
 			return fmt.Errorf("'%s'state has not beeing implemented for notifications", key)
 		}
 		_groupByKNXState[conf.GrpAddr] = conf
+		s.requestKNXState(key) // Requesting initial state value
 	}
 	return nil
 }
@@ -63,7 +64,7 @@ func (s *shutter) shutterClose(data interface{}) (interface{}, error) {
 func (s *shutter) shutterSend(value bool) {
 	if confGroup, in := s.Actions["open"]; in {
 		data := dpt.DPT_1009(value).Pack()
-		if err := sendKNX(confGroup.GroupWrite, data); err != nil {
+		if err := writeKNX(confGroup.GroupWrite, data); err != nil {
 			zlog.Error().Str("device", s.Ref).Err(err).Msg("[main:shutterSend]")
 		}
 	} else {
@@ -82,7 +83,7 @@ func (s *shutter) shutterSetPosition(data interface{}) (interface{}, error) {
 		if confGroup.GroupWrite != nil {
 			zlog.Trace().Str("device", s.Ref).Float32("targetEffective", targetEffective).Msg("[main:shutterPosition] Moving Shutter")
 
-			if err := sendKNX(confGroup.GroupWrite, data); err != nil {
+			if err := writeKNX(confGroup.GroupWrite, data); err != nil {
 				zlog.Error().Err(err).Msg("[main:shutterPosition]")
 			}
 		} else {

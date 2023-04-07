@@ -17,7 +17,7 @@ type watermeter struct {
 	*eria.EriaThing
 }
 
-func (w *watermeter) linkHandlers() error {
+func (w *watermeter) linkSetup() error {
 	for key, conf := range w.States {
 		conf := conf
 		switch key {
@@ -27,7 +27,7 @@ func (w *watermeter) linkHandlers() error {
 			return fmt.Errorf("'%s'state has not beeing implemented for notifications", key)
 		}
 		_groupByKNXState[conf.GrpAddr] = conf
-
+		w.requestKNXState(key) // Requesting initial state value
 	}
 	return nil
 }
