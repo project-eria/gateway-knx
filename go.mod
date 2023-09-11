@@ -3,7 +3,7 @@ module gateway-knx
 go 1.20
 
 require (
-	github.com/project-eria/eria-core v1.3.0
+	github.com/project-eria/eria-core v1.5.0
 	github.com/rs/zerolog v1.29.0
 	github.com/vapourismo/knx-go v0.0.0-20230307194121-5fc424ba6886
 )
@@ -20,7 +20,7 @@ require (
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
-	github.com/project-eria/go-wot v1.2.2 // indirect
+	github.com/project-eria/go-wot v1.3.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect
 	github.com/savsgio/gotils v0.0.0-20230208104028-c358bd845dee // indirect

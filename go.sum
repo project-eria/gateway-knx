@@ -31,10 +31,10 @@ github.com/philhofer/fwd v1.1.2/go.mod h1:qkPdfjR2SIEbspLqpe1tO4n5yICnr2DY7mqEx2
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/project-eria/eria-core v1.3.0 h1:6snk/3bGJUfOcbFf7ssu/Uuiz7pxFAgrJYvoFkuD+w8=
-github.com/project-eria/eria-core v1.3.0/go.mod h1:3nlmEdHuqwE8n/o8inE6kojEH4UUzk+qFcsnhrKZZPA=
-github.com/project-eria/go-wot v1.2.2 h1:zfquEwXj07TONHxls5EXNRJIffCP7kw6W+WLjybPimA=
-github.com/project-eria/go-wot v1.2.2/go.mod h1:WMkEMiR68WnTZwAG/kGUMDXPte1sittwzXalcvyDLv0=
+github.com/project-eria/eria-core v1.5.0 h1:vSzcb+lhhTv/8mXgoNBctuVfNOFZCT9sBMElBRKiftw=
+github.com/project-eria/eria-core v1.5.0/go.mod h1:NsBKs32ePt1Ucmdqv2Co/Gy5rOWuGWxDxJEfxmJ5Ytc=
+github.com/project-eria/go-wot v1.3.0 h1:B77rqRSWhQzPpJSdCFYvenJV0EHhJ8VCSpeeJME/LPw=
+github.com/project-eria/go-wot v1.3.0/go.mod h1:ZbLG/NOi9dpFMmp1kLz+/Eubbtzjc881eDyI4uv2EV4=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.4.4 h1:8TfxU8dW6PdqD27gjM8MVNuicgxIjxpm4K7x4jp8sis=
 github.com/rivo/uniseg v0.4.4/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
