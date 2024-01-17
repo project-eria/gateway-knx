@@ -3,7 +3,7 @@ package lib
 import (
 	"errors"
 
-	"github.com/project-eria/eria-core"
+	"github.com/project-eria/go-wot/producer"
 	zlog "github.com/rs/zerolog/log"
 
 	"github.com/vapourismo/knx-go/knx"
@@ -13,7 +13,7 @@ import (
 type ConfigDevice struct {
 	Type    string                         `yaml:"type"`
 	Name    string                         `yaml:"name"`
-	Ref     string                         `yaml:"ref"`
+	ID      string                         `yaml:"id"`
 	States  map[string]*configStatesGroup  `yaml:"states"`
 	Actions map[string]*configActionsGroup `yaml:"actions"`
 }
@@ -51,23 +51,23 @@ func CloseKNX() {
 	client.Close()
 }
 
-func NewKNXThing(config *ConfigDevice, t *eria.EriaThing) (knxThing, error) {
-	zlog.Info().Str("device", config.Ref).Msg("[main] new KNX Thing")
+func NewKNXThing(config *ConfigDevice, t producer.ExposedThing) (knxThing, error) {
+	zlog.Info().Str("device", config.ID).Msg("[main] new KNX Thing")
 
 	var knxthing knxThing
 	switch config.Type {
 	case "LightBasic", "LightDimmer":
 		knxthing = &light{
 			ConfigDevice: config,
-			EriaThing:    t}
+			ExposedThing: t}
 	case "ShutterBasic", "ShutterPosition":
 		knxthing = &shutter{
 			ConfigDevice: config,
-			EriaThing:    t}
+			ExposedThing: t}
 	case "WaterMeter":
 		knxthing = &watermeter{
 			ConfigDevice: config,
-			EriaThing:    t}
+			ExposedThing: t}
 	default:
 		return nil, errors.New(config.Type + " type hasn't been implemented yet")
 	}
@@ -105,10 +105,10 @@ func readKNX(group *cemi.GroupAddr) error {
 func (c *ConfigDevice) requestKNXState(state string) {
 	if confGroup, in := c.States[state]; in {
 		if err := readKNX(confGroup.GroupRead); err != nil {
-			zlog.Error().Str("device", c.Ref).Err(err).Msg("[main:requestKNXState]")
+			zlog.Error().Str("device", c.ID).Err(err).Msg("[main:requestKNXState]")
 		}
 	} else {
-		zlog.Warn().Str("device", c.Ref).Str("state", state).Msg("[main:requestKNXState] Missing KNX group")
+		zlog.Warn().Str("device", c.ID).Str("state", state).Msg("[main:requestKNXState] Missing KNX group")
 	}
 }
 

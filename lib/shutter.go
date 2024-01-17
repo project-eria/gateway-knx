@@ -6,23 +6,27 @@ import (
 	"math"
 
 	"github.com/project-eria/eria-core"
-
+	"github.com/project-eria/go-wot/producer"
 	zlog "github.com/rs/zerolog/log"
 	"github.com/vapourismo/knx-go/knx/dpt"
 )
 
 type shutter struct {
 	*ConfigDevice
-	*eria.EriaThing
+	producer.ExposedThing
 }
 
 func (s *shutter) linkSetup() error {
+	producer := eria.Producer("")
 	switch s.Type {
 	case "ShutterBasic":
+		producer.PropertyUseDefaultHandlers(s, "open")
 		s.SetActionHandler("open", s.shutterOpen)
 		s.SetActionHandler("close", s.shutterClose)
 		//s.SetActionHandler("stop", s.shutterStop)
 	case "ShutterPosition":
+		producer.PropertyUseDefaultHandlers(s, "open")
+		producer.PropertyUseDefaultHandlers(s, "position")
 		s.SetActionHandler("open", s.shutterOpen)
 		s.SetActionHandler("close", s.shutterClose)
 		//s.SetActionHandler("stop", s.shutterStop)
@@ -47,12 +51,12 @@ func (s *shutter) linkSetup() error {
 	return nil
 }
 
-func (s *shutter) shutterOpen(data interface{}) (interface{}, error) {
+func (s *shutter) shutterOpen(data interface{}, parameters map[string]interface{}) (interface{}, error) {
 	s.shutterSend(false)
 	return nil, nil
 }
 
-func (s *shutter) shutterClose(data interface{}) (interface{}, error) {
+func (s *shutter) shutterClose(data interface{}, parameters map[string]interface{}) (interface{}, error) {
 	s.shutterSend(true)
 	return nil, nil
 }
@@ -65,15 +69,15 @@ func (s *shutter) shutterSend(value bool) {
 	if confGroup, in := s.Actions["open"]; in {
 		data := dpt.DPT_1009(value).Pack()
 		if err := writeKNX(confGroup.GroupWrite, data); err != nil {
-			zlog.Error().Str("device", s.Ref).Err(err).Msg("[main:shutterSend]")
+			zlog.Error().Str("device", s.ID).Err(err).Msg("[main:shutterSend]")
 		}
 	} else {
-		zlog.Warn().Str("device", s.Ref).Msg("[main:shutterSend] Missing KNX group for 'open'")
+		zlog.Warn().Str("device", s.ID).Msg("[main:shutterSend] Missing KNX group for 'open'")
 	}
 }
 
-func (s *shutter) shutterSetPosition(data interface{}) (interface{}, error) {
-	target := float32(data.(float64))
+func (s *shutter) shutterSetPosition(data interface{}, parameters map[string]interface{}) (interface{}, error) {
+	target := float32(data.(int))
 	targetEffective := target
 	if confGroup, in := s.Actions["set"]; in {
 		if confGroup.InvertValue {
@@ -81,7 +85,7 @@ func (s *shutter) shutterSetPosition(data interface{}) (interface{}, error) {
 		}
 		data := dpt.DPT_5001(targetEffective).Pack()
 		if confGroup.GroupWrite != nil {
-			zlog.Trace().Str("device", s.Ref).Float32("targetEffective", targetEffective).Msg("[main:shutterPosition] Moving Shutter")
+			zlog.Trace().Str("device", s.ID).Float32("targetEffective", targetEffective).Msg("[main:shutterPosition] Moving Shutter")
 
 			if err := writeKNX(confGroup.GroupWrite, data); err != nil {
 				zlog.Error().Err(err).Msg("[main:shutterPosition]")
@@ -123,7 +127,7 @@ func (s *shutter) processKNXPosition(data []byte, invertValue bool) error {
 		value = 100 - value // Invert 0%=>Close 100%=>Open
 	}
 	zlog.Trace().Int("value", value).Msg("[main] position value")
-	s.SetPropertyValue("position", value)
-	s.SetPropertyValue("open", (value > 0))
+	eria.Producer("").SetPropertyValue(s, "position", value)
+	eria.Producer("").SetPropertyValue(s, "open", (value > 0))
 	return nil
 }

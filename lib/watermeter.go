@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/project-eria/eria-core"
-
+	"github.com/project-eria/go-wot/producer"
 	zlog "github.com/rs/zerolog/log"
 	"github.com/vapourismo/knx-go/knx/dpt"
 )
@@ -14,10 +14,12 @@ import (
 
 type watermeter struct {
 	*ConfigDevice
-	*eria.EriaThing
+	producer.ExposedThing
 }
 
 func (w *watermeter) linkSetup() error {
+	producer := eria.Producer("")
+	producer.PropertyUseDefaultHandlers(w, "liters")
 	for key, conf := range w.States {
 		conf := conf
 		switch key {
@@ -41,6 +43,6 @@ func (w *watermeter) processKNXLiters(data []byte, _ bool) error {
 		return errors.New("Unpacking 'liters' data has failed: " + err.Error())
 	}
 	value := float64(unpackedData)
-	w.SetPropertyValue("liters", value)
+	eria.Producer("").SetPropertyValue(w, "liters", value)
 	return nil
 }

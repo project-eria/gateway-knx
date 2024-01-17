@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/project-eria/eria-core"
+	"github.com/project-eria/go-wot/producer"
 
 	zlog "github.com/rs/zerolog/log"
 	"github.com/vapourismo/knx-go/knx/dpt"
@@ -14,14 +15,18 @@ import (
 
 type light struct {
 	*ConfigDevice
-	*eria.EriaThing
+	producer.ExposedThing
 }
 
 func (l *light) linkSetup() error {
+	producer := eria.Producer("")
 	switch l.Type {
 	case "LightBasic":
+		producer.PropertyUseDefaultHandlers(l, "on")
 		l.SetActionHandler("toggle", l.lampToggle)
 	case "LightDimmer":
+		producer.PropertyUseDefaultHandlers(l, "on")
+		producer.PropertyUseDefaultHandlers(l, "brightness")
 		l.SetActionHandler("toggle", l.lampToggle)
 		l.SetActionHandler("fade", l.lampFade)
 	default:
@@ -44,28 +49,28 @@ func (l *light) linkSetup() error {
 	return nil
 }
 
-func (l *light) lampToggle(data interface{}) (interface{}, error) {
-	var newValue = !l.GetPropertyValue("on").(bool)
+func (l *light) lampToggle(data interface{}, parameters map[string]interface{}) (interface{}, error) {
+	var newValue = !eria.Producer("").GetPropertyValue(l, "on").(bool)
 	l.lampOnOffSend(newValue)
 	return newValue, nil
 }
 
-func (l *light) lampFade(data interface{}) (interface{}, error) {
+func (l *light) lampFade(data interface{}, parameters map[string]interface{}) (interface{}, error) {
 	brightness := float32(data.(float64))
 	if confGroup, in := l.Actions["fade"]; in {
 		payload := dpt.DPT_5001(brightness).Pack()
 		if confGroup.GroupWrite != nil {
-			zlog.Trace().Str("device", l.Ref).Float32("brightness", brightness).Msg("[main:lampFade] Dimming Lamp")
+			zlog.Trace().Str("device", l.ID).Float32("brightness", brightness).Msg("[main:lampFade] Dimming Lamp")
 			if err := writeKNX(confGroup.GroupWrite, payload); err != nil {
-				zlog.Error().Str("device", l.Ref).Err(err).Msg("[main:lampFade]")
+				zlog.Error().Str("device", l.ID).Err(err).Msg("[main:lampFade]")
 				return nil, err
 			}
 		} else {
-			zlog.Error().Str("device", l.Ref).Msg("[main:lampFade] Missing write groupe configuration for 'fade'")
+			zlog.Error().Str("device", l.ID).Msg("[main:lampFade] Missing write groupe configuration for 'fade'")
 			return nil, errors.New("missing write groupe configuration for 'fade'")
 		}
 	} else {
-		zlog.Error().Str("device", l.Ref).Msg("[main:lampFade] Missing 'fade' configuration")
+		zlog.Error().Str("device", l.ID).Msg("[main:lampFade] Missing 'fade' configuration")
 		return nil, errors.New("missing 'fade' configuration")
 	}
 	return brightness, nil
@@ -78,7 +83,7 @@ func (l *light) lampOnOffSend(value bool) {
 			zlog.Error().Err(err).Msg("[main:lampOnOffSend]")
 		}
 	} else {
-		zlog.Warn().Str("device", l.Ref).Msg("[main:lampOnOffSend] Missing KNX group for 'light'")
+		zlog.Warn().Str("device", l.ID).Msg("[main:lampOnOffSend] Missing KNX group for 'light'")
 	}
 }
 
@@ -91,7 +96,7 @@ func (l *light) processKNXOn(data []byte, _ bool) error {
 		return errors.New("Unpacking 'on' data has failed: " + err.Error())
 	}
 	value := (strings.ToLower(unpackedData.String()) == "on")
-	l.SetPropertyValue("on", value)
+	eria.Producer("").SetPropertyValue(l, "on", value)
 	return nil
 }
 
@@ -104,7 +109,7 @@ func (l *light) processKNXBrightness(data []byte, _ bool) error {
 		return errors.New("Unpacking 'brightness' data has failed: " + err.Error())
 	}
 	value := int(math.Round(float64(unpackedData))) //Fix for https://github.com/vapourismo/knx-go/issues/23
-	l.SetPropertyValue("brightness", value)
+	eria.Producer("").SetPropertyValue(l, "brightness", value)
 
 	return nil
 }
