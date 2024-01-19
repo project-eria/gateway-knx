@@ -65,6 +65,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/project-eria/eria-core v1.11.0 h1:bR4UgiIvDpYFOK72v4IGvk6/A/neA02qI9fQn78Q/UY=
 github.com/project-eria/eria-core v1.11.0/go.mod h1:RsB8LPiofPEOIjmhPLqOTb12gJ7V8yG/+a4qEMDIQmQ=
+github.com/project-eria/eria-core v1.12.1 h1:9MhWAq+wH+82hMgkaL1v6fNvpuI7/YkK7O3UNceuGy0=
+github.com/project-eria/eria-core v1.12.1/go.mod h1:RsB8LPiofPEOIjmhPLqOTb12gJ7V8yG/+a4qEMDIQmQ=
 github.com/project-eria/go-wot v1.6.0 h1:cWBPJ6RS/RRTOww/acL9M9L00kNpy23t4voLxj6pxKk=
 github.com/project-eria/go-wot v1.6.0/go.mod h1:koyZzqkM/GAGs4tssAuPagb614jWJ+ePr5Th/q5Xp6o=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
