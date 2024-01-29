@@ -3,10 +3,10 @@ module gateway-knx
 go 1.21
 
 require (
-	github.com/project-eria/eria-core v1.12.1
+	github.com/project-eria/eria-core v1.13.0
 	github.com/project-eria/go-wot v1.6.0
 	github.com/rs/zerolog v1.31.0
-	github.com/vapourismo/knx-go v0.0.0-20240107135439-816b70397a00
+	github.com/vapourismo/knx-go v0.0.0-20240128110738-5b5fdf735d43
 )
 
 require (
@@ -15,14 +15,14 @@ require (
 	github.com/go-co-op/gocron v1.37.0 // indirect
 	github.com/gofiber/fiber/v2 v2.52.0 // indirect
 	github.com/gofiber/websocket/v2 v2.2.1 // indirect
-	github.com/google/uuid v1.5.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/gookit/goutil v0.6.15 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
-	github.com/klauspost/compress v1.17.4 // indirect
+	github.com/klauspost/compress v1.17.5 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
-	github.com/rivo/uniseg v0.4.4 // indirect
+	github.com/rivo/uniseg v0.4.6 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/savsgio/gotils v0.0.0-20230208104028-c358bd845dee // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
