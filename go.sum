@@ -63,8 +63,8 @@ github.com/pkg/diff v0.0.0-20210226163009-20ebb0f2a09e/go.mod h1:pJLUxLENpZxwdsK
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/project-eria/eria-core v1.13.0 h1:xjL/wbsadRWwtHqCOE6/PW0lwi8C538QYmExpd3q8yU=
-github.com/project-eria/eria-core v1.13.0/go.mod h1:RsB8LPiofPEOIjmhPLqOTb12gJ7V8yG/+a4qEMDIQmQ=
+github.com/project-eria/eria-core v1.13.1 h1:dAHnfj9eEKhjjFX9ToxIQp7ikzdBFT5pg1XoNjZcAoE=
+github.com/project-eria/eria-core v1.13.1/go.mod h1:/6MLgj1WM/dxGFB6oDsMwyKoRPlYPVu9LnOyHEWMFjo=
 github.com/project-eria/go-wot v1.6.0 h1:cWBPJ6RS/RRTOww/acL9M9L00kNpy23t4voLxj6pxKk=
 github.com/project-eria/go-wot v1.6.0/go.mod h1:koyZzqkM/GAGs4tssAuPagb614jWJ+ePr5Th/q5Xp6o=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
@@ -102,8 +102,8 @@ github.com/valyala/fasthttp v1.51.0 h1:8b30A5JlZ6C7AS81RsWjYMQmrZG6feChmgAolCl1S
 github.com/valyala/fasthttp v1.51.0/go.mod h1:oI2XroL+lI7vdXyYoQk03bXBThfFl2cVdIA3Xl7cH8g=
 github.com/valyala/tcplisten v1.0.0 h1:rBHj/Xf+E1tRGZyWIWwJDiRY0zc1Js+CV5DqwacVSA8=
 github.com/valyala/tcplisten v1.0.0/go.mod h1:T0xQ8SeCZGxckz9qRXTfG43PvQ/mcWh7FwZEA7Ioqkc=
-github.com/vapourismo/knx-go v0.0.0-20240128110738-5b5fdf735d43 h1:Ft7azTldW3Zx/Fr7nUl3lLCI8Rt9Ikp0OBgNd6f/OnU=
-github.com/vapourismo/knx-go v0.0.0-20240128110738-5b5fdf735d43/go.mod h1:aGkV5xHz9sBkAckp2hez7khfehKp4YvyBwAmVdVEulg=
+github.com/vapourismo/knx-go v0.0.0-20240129155047-4375cb048e09 h1:FabAtpRImSEJzDPBT+vMM2KX20YK+ftXtfWsYGgqs3Q=
+github.com/vapourismo/knx-go v0.0.0-20240129155047-4375cb048e09/go.mod h1:aGkV5xHz9sBkAckp2hez7khfehKp4YvyBwAmVdVEulg=
 github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb h1:zGWFAtiMcyryUHoUjUJX0/lt1H2+i2Ka2n+D3DImSNo=
 github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb/go.mod h1:N2zxlSyiKSe5eX1tZViRH5QA0qijqEDrYZiPEAiq3wU=
 github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 h1:EzJWgHovont7NscjpAxXsDA8S8BMYve8Y5+7cuRE7R0=
