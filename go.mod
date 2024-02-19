@@ -3,10 +3,10 @@ module gateway-knx
 go 1.21
 
 require (
-	github.com/project-eria/eria-core v1.14.1
+	github.com/project-eria/eria-core v1.14.2
 	github.com/project-eria/go-wot v1.6.0
 	github.com/rs/zerolog v1.32.0
-	github.com/vapourismo/knx-go v0.0.0-20240129155047-4375cb048e09
+	github.com/vapourismo/knx-go v0.0.0-20240217175130-922a0d50c241
 )
 
 require (
@@ -29,7 +29,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.52.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	golang.org/x/exp v0.0.0-20240205201215-2c58cdc269a3 // indirect
+	golang.org/x/exp v0.0.0-20240213143201-ec583247a57a // indirect
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
