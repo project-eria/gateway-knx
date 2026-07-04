@@ -64,6 +64,10 @@ func NewKNXThing(config *ConfigDevice, t producer.ExposedThing) (knxThing, error
 		knxthing = &shutter{
 			ConfigDevice: config,
 			ExposedThing: t}
+	case "GarageDoor":
+		knxthing = &garageDoor{
+			ConfigDevice: config,
+			ExposedThing: t}
 	case "WaterMeter":
 		knxthing = &watermeter{
 			ConfigDevice: config,
