@@ -50,7 +50,14 @@ func (l *light) linkSetup() error {
 }
 
 func (l *light) lampToggle(data interface{}, parameters map[string]interface{}) (interface{}, error) {
-	var newValue = !eria.Producer("").GetPropertyValue(l, "on").(bool)
+	// The 'on' state can still be unknown (nil) if the initial KNX state request
+	// got no answer yet, so don't blindly type assert it
+	value, ok := eria.Producer("").GetPropertyValue(l, "on").(bool)
+	if !ok {
+		zlog.Error().Str("device", l.ID).Msg("[main:lampToggle] Unknown 'on' state, can't toggle")
+		return nil, errors.New("unknown 'on' state, can't toggle")
+	}
+	newValue := !value
 	l.lampOnOffSend(newValue)
 	return newValue, nil
 }
