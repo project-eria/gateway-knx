@@ -1,0 +1,29 @@
+# ERIA package description (orchestrator catalog, eria-manager DESIGN §12.3)
+name: gateway-knx
+title: Passerelle KNX
+description: Pont entre le bus KNX (via knxd) et les Things ERIA (lumières, volets, capteurs)
+kind: gateway
+requires: [knx]
+
+exec:
+  args: ["--config-path", "{config}"]
+  health: { url: "http://127.0.0.1:{port}/eria", grace: 20s, interval: 10s }
+
+config: |
+  host: 0.0.0.0
+  port: 20001
+  location: Europe/Paris
+  gateway:
+    host: <adresse knxd>
+    port: 3671
+  tunnelMode: true
+  devices:
+  - type: LightBasic
+    name: <nom complet>
+    ref: <référence, sert de chemin d'URL>
+    states:
+      on:
+        grpAddr: <adresse de groupe d'état>
+    actions:
+      toggle:
+        grpAddr: <adresse de groupe d'action>
