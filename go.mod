@@ -3,8 +3,8 @@ module gateway-knx
 go 1.26.0
 
 require (
-	github.com/project-eria/eria-core v1.16.0
-	github.com/project-eria/go-wot v1.8.0
+	github.com/project-eria/eria-core v1.16.1
+	github.com/project-eria/go-wot v1.8.1
 	github.com/rs/zerolog v1.35.1
 	github.com/vapourismo/knx-go v0.0.0-20260813172143-02e535310602
 )
