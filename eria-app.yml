@@ -1,4 +1,4 @@
-# ERIA package description (orchestrator catalog, eria-manager DESIGN §12.3)
+# ERIA package description (orchestrator catalog, eria-coordinator DESIGN §12.3)
 name: gateway-knx
 title: Passerelle KNX
 description: Pont entre le bus KNX (via knxd) et les Things ERIA (lumières, volets, capteurs)
