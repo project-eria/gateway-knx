@@ -6,11 +6,10 @@ kind: gateway
 requires: [knx]
 
 # Things it reads, accepted by the admin at deployment (AUTH-DESIGN §2.6):
-# the contexts of the automations' conditions, the astral hours of their
-# schedules.
+# the contexts of the automations' conditions, kept from outside guests.
+# The astral hours are public: open to all, they need no grant.
 grants:
   - thing:urn:eria:manager:context:read
-  - thing:urn:eria:service:astral:1:read
 
 exec:
   args: ["--config-path", "{config}"]
