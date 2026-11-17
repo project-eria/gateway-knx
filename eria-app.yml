@@ -10,6 +10,7 @@ requires: [knx]
 # The astral hours are public: open to all, they need no grant.
 grants:
   - thing:urn:eria:manager:context:read
+  - thing:urn:eria:service:astral:1:read # at|…|astral: schedules
 
 exec:
   args: ["--config-path", "{config}"]
